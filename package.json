@@ -1,8 +1,9 @@
 {
 	"name": "vscode-file-peek",
 	"displayName": "File Peek",
-	"description": "Allow peeking to files based upon names in strings of code files.",
-	"version": "0.0.1",
+	"description": "Allow peeking to files referenced by strings in Javascript and Typescript files. (ex: Angular Template files)",
+   "keywords": ["peek", "file", "angular"],
+	"version": "0.1.0",
 	"publisher": "abierbaum",
 	"engines": {
 		"vscode": "^0.10.6"
@@ -11,14 +12,12 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension.sayHello"
+		"onLanguage:typescript",
+      "onLanguage:javascript"
 	],
 	"main": "./out/src/extension",
 	"contributes": {
-		"commands": [{
-			"command": "extension.sayHello",
-			"title": "Hello World"
-		}]
+		"commands": []
 	},
 	"scripts": {
 		"vscode:prepublish": "node ./node_modules/vscode/bin/compile",
