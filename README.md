@@ -37,6 +37,10 @@ Contributions are greatly appreciated.  Please fork the repository and submit a 
 
 # Changelog
 
+## 0.3.0
+
+  * Added icon for package
+
 ## 0.2.0
 
   * Improved lookup of file strings to handle corner case with variables of the same name as the files.

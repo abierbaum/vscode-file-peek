@@ -2,6 +2,7 @@
   "name": "vscode-file-peek",
   "displayName": "File Peek",
   "description": "Allow peeking to file name strings as definitions from javascript and typescript code.  Allows peek and goto definition. Great for Angular template and style files)",
+  "icon": "images/file_peek_icon.png",
   "license": "MIT",
   "keywords": [
     "peek",
@@ -9,7 +10,7 @@
     "file",
     "angular"
   ],
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "abierbaum",
   "bugs": {
     "url": "https://github.com/abierbaum/vscode-file-peek/issues"
