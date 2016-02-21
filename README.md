@@ -1,13 +1,46 @@
-# README
-## This is the README for your extension "vscode-file-peek" 
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
+# Functionality
 
-* Split the editor (`Cmd+\` on OSX or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on OSX or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (OSX) to see a list of Markdown snippets
+This extension extends Typescript and Javascript code editing with `Go To Definition`
+support for filenames found in strings within the source code.
 
-### For more information
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+I created this extension for use with Angular 2 component definitions.
+The idea is to allow quickly jumping to or peeking into files that are referenced
+from your source.  For example if there is an html or css file referenced
+this will allow jumping to that file as the "definition" of the string name
+of the file in the source code.
 
-** Enjoy!**
+The extension supports all the normal capabilities of symbol definition tracking,
+but does it for file names.  This includes:
+
+ * Peek: load the file inline and make quick edits right there. (`Ctrl+Shift+F12`)
+ * Go To: jump directly to the file or open it in a new editor (`F12`)
+ * Hover: show the definition in a hover over the symbol (`Ctrl+hover`)
+
+See editor docs for more details
+ * [Visual Studio Code: Goto Definition](https://code.visualstudio.com/docs/editor/editingevolved#_go-to-definition)
+ * [Visual Studio Code: Peek](https://code.visualstudio.com/docs/editor/editingevolved#_peek)
+
+
+[Add preview image here]
+
+
+# Backlog
+
+Current idea list.  Please add any you think would be useful...
+
+  * Find way to open peek window larger
+  * ...
+
+# Contributing
+
+Contributions are greatly appreciated.  Please fork the repository and submit a pull request.
+
+# Changelog
+
+## 0.2.0
+
+  * Improved lookup of file strings to handle corner case with variables of the same name as the files.
+
+## 0.1.0
+
+  * First version released.
