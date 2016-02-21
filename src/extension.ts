@@ -48,31 +48,42 @@ class PeekFileDefinitionProvider implements vscode.DefinitionProvider {
                      position: vscode.Position,
                      token: vscode.CancellationToken): vscode.Definition {
       // todo: make this method operate async
-      let word = document.getText(document.getWordRangeAtPosition(position));
-      let line = document.lineAt(position);
+      let working_dir = path.dirname(document.fileName);
+      let word        = document.getText(document.getWordRangeAtPosition(position));
+      let line        = document.lineAt(position);
 
-      console.log('====== peek-file definition lookup ===========');
-      console.log('word: ' + word);
-      console.log('line: ' + line.text);
+      //console.log('====== peek-file definition lookup ===========');
+      //console.log('word: ' + word);
+      //console.log('line: ' + line.text);
 
       // We are looking for strings with filenames
       // - simple hack for now we look for the string with our current word in it on our line
-      var re_str = `\"(.*?${word}.*?)\"|\'(.*?${word}.*?)\'`;
-      var containing_string_re = new RegExp(re_str);
-      var match = line.text.match(containing_string_re);
+      //   and where our cursor position is inside the string
+      let re_str = `\"(.*?${word}.*?)\"|\'(.*?${word}.*?)\'`;
+      let match = line.text.match(re_str);
 
-      if (null !== match) {
-         // Pull out the matching filename from one of the match groups
-         let filename    = match[1] || match[2];
-         let working_dir = path.dirname(document.fileName);
-         let full_path   = path.resolve(working_dir, filename);
+      //console.log('re_str: ' + re_str);
+      //console.log("   Match: ", match);
 
-         //console.log("   Match: ", match);
-         console.log("Filename: " + filename);
-         console.log("    Full: " + full_path);
+      if (null !== match)
+      {
+         let potential_fname = match[1] || match[2];
+         let match_start = match.index;
+         let match_end   = match.index + potential_fname.length;
 
-         if(fs.existsSync(full_path)) {
-            return new vscode.Location(vscode.Uri.file(full_path), new vscode.Position(0, 1));
+         // Verify the match string is at same location as cursor
+         if((position.character >= match_start) &&
+            (position.character <= match_end))
+         {
+            let full_path   = path.resolve(working_dir, potential_fname);
+
+            //console.log(" Match: ", match);
+            //console.log(" Fname: " + potential_fname);
+            //console.log("  Full: " + full_path);
+
+            if(fs.existsSync(full_path)) {
+               return new vscode.Location(vscode.Uri.file(full_path), new vscode.Position(0, 1));
+            }
          }
       }
 
