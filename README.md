@@ -1,16 +1,12 @@
 # Functionality
 
-This extension extends Typescript and Javascript code editing with `Go To Definition`
-support for filenames found in strings within the source code.
+This extension extends Typescript and Javascript code editing with `Go To Definition` support for filenames found in strings within the source code.
 
-I created this extension for use with Angular 2 component definitions.
-The idea is to allow quickly jumping to or peeking into files that are referenced
-from your source.  For example if there is an html or css file referenced
-this will allow jumping to that file as the "definition" of the string name
-of the file in the source code.
+I created this extension for use with Angular 2 component definitions. The idea is to allow quickly jumping to or peeking into files that are referenced from your source.  For example if there is an html or css file referenced this will allow jumping to that file as the "definition" of the string name of the file in the source code.
 
-The extension supports all the normal capabilities of symbol definition tracking,
-but does it for file names.  This includes:
+![working](images/working.gif)
+
+The extension supports all the normal capabilities of symbol definition tracking, but does it for file names.  This includes:
 
  * Peek: load the file inline and make quick edits right there. (`Ctrl+Shift+F12`)
  * Go To: jump directly to the file or open it in a new editor (`F12`)
@@ -19,10 +15,6 @@ but does it for file names.  This includes:
 See editor docs for more details
  * [Visual Studio Code: Goto Definition](https://code.visualstudio.com/docs/editor/editingevolved#_go-to-definition)
  * [Visual Studio Code: Peek](https://code.visualstudio.com/docs/editor/editingevolved#_peek)
-
-
-[Add preview image here]
-
 
 # Backlog
 
@@ -36,6 +28,10 @@ Current idea list.  Please add any you think would be useful...
 Contributions are greatly appreciated.  Please fork the repository and submit a pull request.
 
 # Changelog
+
+## 0.3.1
+
+  * Expanded documentation
 
 ## 0.3.0
 
