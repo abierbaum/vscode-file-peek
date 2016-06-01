@@ -29,6 +29,13 @@ Contributions are greatly appreciated.  Please fork the repository and submit a 
 
 # Changelog
 
+## 1.0.0
+
+  * Added configuration option:
+    * Set languages where plugin is active
+    * Set list of extra file extensions to check for looking up files
+  * Updated dependencies
+
 ## 0.3.1
 
   * Expanded documentation

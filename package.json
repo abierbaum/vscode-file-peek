@@ -10,7 +10,7 @@
     "file",
     "angular"
   ],
-  "version": "0.3.1",
+  "version": "1.0.0",
   "publisher": "abierbaum",
   "bugs": {
     "url": "https://github.com/abierbaum/vscode-file-peek/issues"
@@ -27,12 +27,37 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:typescript",
-    "onLanguage:javascript"
+    "*"
   ],
   "main": "./out/src/extension",
   "contributes": {
-    "commands": []
+    "commands": [],
+    "configuration": {
+      "type": "object",
+      "title": "File Peek extension configuration",
+      "properties": {
+        "file_peek.activeLanguages": {
+          "type": "array",
+          "default": [
+            "typescript",
+            "javascript",
+            "python"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of vscode language names where the extension should be used."
+        },
+        "file_peek.searchFileExtensions": {
+          "type": "array",
+          "default": [".js", ".ts", ".html", ".css", ".scss"],
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of extensions that should be tried for finding peeked files.  These are tried in order as further extensions of the potential file name and also as alternative file endings instead of the existing file extension (if available)."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "node ./node_modules/vscode/bin/compile",

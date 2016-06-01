@@ -3,18 +3,6 @@ import * as vscode from 'vscode';
 import * as fs   from 'fs';
 import * as path from 'path';
 
-/**
- * Setup to support typescript and javascript source code.
- */
-const PEEK_FILTER: vscode.DocumentFilter[] = [
-   {
-      language: 'typescript',
-      scheme:   'file'
-   }, {
-      language: 'javascript',
-      scheme:   'file'
-   }
-];
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -22,7 +10,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "vscode-file-peek" is now active!');
+	//console.log('Congratulations, your extension "vscode-file-peek" is now active!');
+
+   let config = vscode.workspace.getConfiguration('file_peek');
+   let active_languages       = (config.get('activeLanguages') as Array<string>);
+   let search_file_extensions = (config.get('searchFileExtensions') as Array<string>);
 
    /*
    vscode.languages.getLanguages().then((languages: string[]) => {
@@ -30,8 +22,18 @@ export function activate(context: vscode.ExtensionContext) {
    });
    */
 
+   const peek_filter: vscode.DocumentFilter[] = active_languages.map((language) => {
+      return {
+         language: language,
+         scheme: 'file'
+      };
+   });
+
    // Register the definition provider
-   context.subscriptions.push(vscode.languages.registerDefinitionProvider(PEEK_FILTER, new PeekFileDefinitionProvider()));
+   context.subscriptions.push(
+      vscode.languages.registerDefinitionProvider(peek_filter,
+                     new PeekFileDefinitionProvider(search_file_extensions))
+   );
 }
 
 // this method is called when your extension is deactivated
@@ -43,6 +45,41 @@ export function deactivate() {
  * Provide the lookup so we can peek into the files.
  */
 class PeekFileDefinitionProvider implements vscode.DefinitionProvider {
+   protected fileSearchExtensions: string[] = [];
+
+   constructor(fileSearchExtensions: string[] = []) {
+      this.fileSearchExtensions = fileSearchExtensions;
+   }
+
+   /**
+    * Return list of potential paths to check
+    * based upon file search extensions for a potential lookup.
+    */
+   getPotentialPaths(lookupPath: string): string[] {
+      let potential_paths: string[] = [lookupPath];
+
+      // Add on list where we just add the file extension directly
+      this.fileSearchExtensions.forEach((extStr) => {
+         potential_paths.push(lookupPath + extStr);
+      });
+
+      // if we have an extension, then try replacing it.
+      let parsed_path = path.parse(lookupPath);
+      if (parsed_path.ext !== "") {
+         this.fileSearchExtensions.forEach((extStr) => {
+            const new_path = path.format({
+               base: parsed_path.name + extStr,
+               dir: parsed_path.dir,
+               ext: extStr,
+               name: parsed_path.name,
+               root: parsed_path.root
+            });
+            potential_paths.push(new_path);
+         });
+      }
+
+      return potential_paths;
+   }
 
    provideDefinition(document: vscode.TextDocument,
                      position: vscode.Position,
@@ -76,13 +113,21 @@ class PeekFileDefinitionProvider implements vscode.DefinitionProvider {
             (position.character <= match_end))
          {
             let full_path   = path.resolve(working_dir, potential_fname);
-
             //console.log(" Match: ", match);
             //console.log(" Fname: " + potential_fname);
             //console.log("  Full: " + full_path);
 
-            if(fs.existsSync(full_path)) {
-               return new vscode.Location(vscode.Uri.file(full_path), new vscode.Position(0, 1));
+            // Find all potential paths to check and return the first one found
+            let potential_fnames = this.getPotentialPaths(full_path);
+            //console.log(" potential fnames: ", potential_fnames);
+
+            let found_fname = potential_fnames.find((fname_full) => {
+               //console.log(" checking: ", fname_full);
+               return fs.existsSync(fname_full);
+            });
+            if (found_fname != null) {
+               console.log('found: ' + found_fname);
+               return new vscode.Location(vscode.Uri.file(found_fname), new vscode.Position(0, 1));
             }
          }
       }
