@@ -16,11 +16,15 @@ See editor docs for more details
  * [Visual Studio Code: Goto Definition](https://code.visualstudio.com/docs/editor/editingevolved#_go-to-definition)
  * [Visual Studio Code: Peek](https://code.visualstudio.com/docs/editor/editingevolved#_peek)
 
+# Notes
+
+I recommend using the `editor.stablePeek` setting to keep the peek editor open across double clicks and escape.  This makes the view work much better for embedded editing.
+
+
 # Backlog
 
 Current idea list.  Please add any you think would be useful...
 
-  * Find way to open peek window larger
   * ...
 
 # Contributing

@@ -8,6 +8,7 @@
         "rootDir": "."
 	},
 	"exclude": [
-		"node_modules"
+		"node_modules",
+		"test/test_files/issue_2"
 	]
 }
