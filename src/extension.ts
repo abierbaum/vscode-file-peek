@@ -112,21 +112,24 @@ class PeekFileDefinitionProvider implements vscode.DefinitionProvider {
          if((position.character >= match_start) &&
             (position.character <= match_end))
          {
-            let full_path   = path.resolve(working_dir, potential_fname);
+            let full_relative_path   = path.resolve(working_dir, potential_fname);
+            let full_workspace_path= path.resolve(vscode.workspace.rootPath, potential_fname);
             //console.log(" Match: ", match);
             //console.log(" Fname: " + potential_fname);
-            //console.log("  Full: " + full_path);
+            //console.log("  Full Relative Path: " + full_relative_path);
+            //console.log("  Full Workspace Path: " + full_workspace_path);
 
             // Find all potential paths to check and return the first one found
-            let potential_fnames = this.getPotentialPaths(full_path);
+            let potential_fnames = this.getPotentialPaths(full_relative_path);
+            potential_fnames = potential_fnames.concat(this.getPotentialPaths(full_workspace_path));
             //console.log(" potential fnames: ", potential_fnames);
 
             let found_fname = potential_fnames.find((fname_full) => {
-               //console.log(" checking: ", fname_full);
+                //console.log(" checking: ", fname_full);
                return fs.existsSync(fname_full);
             });
             if (found_fname != null) {
-               console.log('found: ' + found_fname);
+                console.log('found: ' + found_fname);
                return new vscode.Location(vscode.Uri.file(found_fname), new vscode.Position(0, 1));
             }
          }
