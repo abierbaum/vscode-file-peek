@@ -93,7 +93,7 @@ class PeekFileDefinitionProvider implements vscode.DefinitionProvider {
 
         if (!rule) throw new Error("CSS rule not found")
 
-        position = new vscode.Position(rule.position.start.line, rule.position.start.column);
+        position = new vscode.Position(rule.position.start.line-1 || 0, rule.position.start.column);
 
       } catch (error) {
         //Error in parsing CSS
