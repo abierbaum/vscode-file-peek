@@ -1,24 +1,23 @@
 {
-  "name": "vscode-file-peek",
-  "displayName": "File Peek",
-  "description": "Allow peeking to file name strings as definitions from javascript and typescript code.  Allows peek and goto definition. Great for Angular template and style files)",
+  "name": "vscode-css-peek",
+  "displayName": "CSS Peek",
+  "description": "Allow peeking to css ID and class strings as definitions from html files to respective CSS. Allows peek and goto definition.",
   "icon": "images/file_peek_icon.png",
   "license": "MIT",
   "keywords": [
     "peek",
     "definition",
-    "file",
-    "angular"
+    "css"
   ],
-  "version": "1.0.1",
-  "publisher": "abierbaum",
+  "version": "1.0.0",
+  "publisher": "pranaygp",
   "bugs": {
-    "url": "https://github.com/abierbaum/vscode-file-peek/issues"
+    "url": "https://github.com/pranaygp/vscode-css-peek/issues"
   },
-  "homepage": "https://github.com/abierbaum/vscode-file-peek/blob/master/README.md",
+  "homepage": "https://github.com/pranaygp/vscode-css-peek/blob/master/README.md",
   "repository": {
     "type": "git",
-    "url": "https://github.com/abierbaum/vscode-file-peek.git"
+    "url": "https://github.com/pranaygp/vscode-css-peek.git"
   },
   "engines": {
     "vscode": "^0.10.6"
@@ -34,27 +33,30 @@
     "commands": [],
     "configuration": {
       "type": "object",
-      "title": "File Peek extension configuration",
+      "title": "CSS Peek extension configuration",
       "properties": {
-        "file_peek.activeLanguages": {
+        "css_peek.activeLanguages": {
           "type": "array",
           "default": [
-            "typescript",
-            "javascript",
-            "python"
+            "html",
+            "ejs"
           ],
           "items": {
             "type": "string"
           },
           "description": "A list of vscode language names where the extension should be used."
         },
-        "file_peek.searchFileExtensions": {
+        "css_peek.searchFileExtensions": {
           "type": "array",
-          "default": [".js", ".ts", ".html", ".css", ".scss"],
+          "default": [
+            ".css",
+            ".scss",
+            ".less"
+          ],
           "items": {
             "type": "string"
           },
-          "description": "A list of extensions that should be tried for finding peeked files.  These are tried in order as further extensions of the potential file name and also as alternative file endings instead of the existing file extension (if available)."
+          "description": "A list of extensions that should be tried for finding peeked files."
         }
       }
     }
@@ -68,5 +70,9 @@
     "typescript": "^1.8.10",
     "vsce": "^1.5.0",
     "vscode": "^0.11.13"
+  },
+  "dependencies": {
+    "css": "^2.2.1",
+    "lodash": "^4.17.2"
   }
 }
