@@ -6,10 +6,10 @@ This was heavliy based off a [file peeker extension](https://github.com/abierbau
 
 ![working](images/working.gif)
 
-The extension supports all the normal capabilities of symbol definition tracking, but does it for file names.  This includes:
+The extension supports all the normal capabilities of symbol definition tracking, but does it for css selectors (classes and IDs). This includes:
 
- * Peek: load the file inline and make quick edits right there. (`Ctrl+Shift+F12`)
- * Go To: jump directly to the file or open it in a new editor (`F12`)
+ * Peek: load the css file inline and make quick edits right there. (`Ctrl+Shift+F12`)
+ * Go To: jump directly to the css file or open it in a new editor (`F12`)
  * Hover: show the definition in a hover over the symbol (`Ctrl+hover`)
 
 See editor docs for more details
@@ -21,6 +21,10 @@ See editor docs for more details
 Contributions are greatly appreciated.  Please fork the repository and submit a pull request.
 
 # Changelog
+
+## 1.2.1
+
+  * Fix README typo
 
 ## 1.2.0
     
