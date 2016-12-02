@@ -22,6 +22,11 @@ Contributions are greatly appreciated.  Please fork the repository and submit a 
 
 # Changelog
 
+## 1.2.0
+    
+  * Add `less` support
+  * Configure search file extensions using "css_peek.searchFileExtensions"
+
 ## 1.1.0
     
   * Update Icon
