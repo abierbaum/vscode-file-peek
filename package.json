@@ -2,7 +2,7 @@
   "name": "vscode-css-peek",
   "displayName": "CSS Peek",
   "description": "Allow peeking to css ID and class strings as definitions from html files to respective CSS. Allows peek and goto definition.",
-  "icon": "images/file_peek_icon.png",
+  "icon": "images/css_peek_icon.png",
   "license": "MIT",
   "keywords": [
     "peek",
