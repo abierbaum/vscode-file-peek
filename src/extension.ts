@@ -10,6 +10,12 @@ const { SourceMapConsumer } = require('source-map');
 //TODO: Add Sass support
 
 
+/**
+ * @typedef CompiledCSS
+ * @type {object}
+ * @property {string} css - compiled CSS string.
+ * @property {Object|null} map - sourcemap object (null if compiled from css to css).
+ */
 interface CompiledCSS {
   css: string;
   map: Object;
@@ -52,6 +58,13 @@ class PeekFileDefinitionProvider implements vscode.DefinitionProvider {
     this.fileSearchExtensions = fileSearchExtensions;
   }
 
+  /**
+   * Pre-Process and return CSS based on the file extension of filename.
+   * If the extension is css, or parsing faile, just return the same text and fail silently
+   * @param {string} file - file_name to find extension and parser appropriately
+   * @param {string} file_text - contents of the file
+   * @return {CompiledCSS} Object containing `css` prop as compiled CSS and `map` prop and sourcemap 
+   */
   async compileCSS(file: string, file_text: string): Promise<CompiledCSS>{
     switch (_.last(file.split("."))) {
       case "less":
