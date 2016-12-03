@@ -2,11 +2,11 @@ import * as vscode from 'vscode';
 
 import * as fs   from 'fs';
 import * as path from 'path';
-const _ = require('lodash');
-const detect = require('async/detect');
-const css = require('css');
-const less = require('less');
-const { SourceMapConsumer } = require('source-map');
+import * as _    from 'lodash';
+import {detect}  from 'async';
+import * as css from 'css';
+import * as less from 'less';
+import { SourceMapConsumer } from 'source-map';
 //TODO: Add Sass support
 
 
@@ -18,23 +18,28 @@ const { SourceMapConsumer } = require('source-map');
  */
 interface CompiledCSS {
   css: string;
-  map: Object;
+  map: SourceMap.RawSourceMap;
 }
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: vscode.ExtensionContext): void {
 
-  let config = vscode.workspace.getConfiguration('css_peek');
-  let active_languages = (config.get('activeLanguages') as Array<string>);
-  let search_file_extensions = (config.get('searchFileExtensions') as Array<string>);
+  const config: vscode.WorkspaceConfiguration =
+    vscode.workspace.getConfiguration('css_peek');
 
-  const peek_filter: vscode.DocumentFilter[] = active_languages.map((language) => {
-    return {
+  const active_languages: Array<string> =
+    (config.get('activeLanguages') as Array<string>);
+
+  const search_file_extensions: Array<string> =
+    (config.get('searchFileExtensions') as Array<string>);
+
+  const peek_filter: vscode.DocumentFilter[] = active_languages.map((language: string) => (
+    {
       language: language,
       scheme: 'file'
-    };
-  });
+    }
+  ));
 
   // Register the definition provider
   context.subscriptions.push(
@@ -44,9 +49,8 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {
+export function deactivate(): void {
 }
-
 
 /**
  * Provide the lookup so we can peek into the files.
@@ -65,90 +69,84 @@ class PeekFileDefinitionProvider implements vscode.DefinitionProvider {
    * @param {string} file_text - contents of the file
    * @return {CompiledCSS} Object containing `css` prop as compiled CSS and `map` prop and sourcemap 
    */
-  async compileCSS(file: string, file_text: string): Promise<CompiledCSS>{
+  async compileCSS(file: string, file_text: string): Promise<CompiledCSS> {
     switch (_.last(file.split("."))) {
       case "less":
         try {
-          const parsed_less = await less.render(file_text, { filename: file, sourceMap: {}});
+          const parsed_less: Less.RenderOutput = await less.render(file_text,  { filename: file, sourceMap: {} });
           return Object.assign({}, parsed_less, { map: JSON.parse(parsed_less.map) });
         } catch (error) {
-          return { css: file_text, map: null};
+          return { css: file_text, map: null };
         }
       default:
-        return { css: file_text, map: null};
+        return { css: file_text, map: null };
+    }
+  }
+
+  /**
+   * Check if selector exists in style file. 
+   * Throws an error if it can't find the rule.
+   * @throws {Error} Can't parse or find rule in CSS
+   * @param {string} file - file_name to parse and check for css selector
+   * @param {string} word - CSS selector
+   * @return {Object} Object containing `rule` prop as the CSS rule and `map` prop and sourcemap 
+   */
+  async findRule(file: string, word: string): Promise<{rule: css.Rule; map: SourceMap.RawSourceMap;}>{ 
+    try {
+      const file_text: string = fs.readFileSync(file, "utf8");
+      const compiled_css: CompiledCSS = await this.compileCSS(file, file_text);
+      const parsed_css: css.Stylesheet = css.parse(compiled_css.css, { silent: true, source: file }); // css Stylesheet type
+
+
+      if (!parsed_css) throw new Error("No CSS ?")
+      if (parsed_css.type !== "stylesheet") throw new Error("CSS isn't a stylesheet")
+      if (!parsed_css.stylesheet.rules) throw new Error("no CSS rules")
+
+      const rule: css.Rule = parsed_css.stylesheet.rules.find((rule: css.Rule) => {
+        return rule.type == "rule" && (_.includes(rule.selectors, "." + word, 0) || _.includes(rule.selectors, "#" + word, 0)) // TODO: don't generalize class and ID selector
+      })
+
+      if (!rule) throw new Error("CSS rule not found")
+      return { rule: rule, map: compiled_css.map };
+    } catch (e){
+      throw e
     }
   }
 
   async provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Promise<vscode.Definition> {
 
-    const word = document.getText(document.getWordRangeAtPosition(position));
+    const word: string = document.getText(document.getWordRangeAtPosition(position));
 
-    const file_searches = await Promise.all(this.fileSearchExtensions.map(type => vscode.workspace.findFiles(`**/*${type}`, "")));
-    const potential_fnames = _.flatten(file_searches).map(uri => uri.fsPath);
+    const file_searches: any = await Promise.all(this.fileSearchExtensions.map(type => vscode.workspace.findFiles(`**/*${type}`, "")));
+    const potential_fnames: string[] = _.flatten(file_searches).map(uri => (uri as any).fsPath);
 
-    let found_fname: any = await new Promise((resolve, reject) => detect(potential_fnames, async (file, callback) => {
-      const file_text = fs.readFileSync(file, "utf8");
-      let parsed_css = null;
+    let found_fname: string = await (new Promise((resolve, reject) => detect(potential_fnames, async (file, callback) => {
       try {
-        
-        const compiled_css: CompiledCSS = await this.compileCSS(file, file_text);
-        parsed_css = css.parse(compiled_css.css, { silent: true, source: file })
-
-        if (!parsed_css) throw new Error("No CSS ?")
-        if (parsed_css.type !== "stylesheet") throw new Error("CSS isn't a stylesheet")
-        if (!parsed_css.stylesheet.rules) throw new Error("no CSS rules")
-
-        let rule = parsed_css.stylesheet.rules.find(rule => {
-          return rule.type == "rule" && (_.includes(rule.selectors, "." + word, 0) || _.includes(rule.selectors, "#" + word, 0)) // TODO: don't generalize class and ID selector
-        })
-
-        if (!rule) throw new Error("CSS rule not found")
-
+        await this.findRule(file, word);
         callback(null, true);
-        return true;
-
-      } catch (error) {
-        //Error in parsing CSS
+      } catch(error){
+        console.log(error);
       }
-      return false;
-    }, function(err, result){
+    }, function (err, result) {
       resolve(result);
-    }));
-
+    })) as Promise<string>);
 
     found_fname = found_fname || potential_fnames[0];
 
     if (found_fname) {
       console.log('found: ' + found_fname);
-      const file_text = fs.readFileSync(found_fname, "utf8");
-      let position = null;
-      let parsed_css = null;
+      let position: vscode.Position = null;
       try {
-        const compiled_css: CompiledCSS = await this.compileCSS(found_fname, file_text);
-        parsed_css = css.parse(compiled_css.css, { silent: true, source: found_fname })
-        if (!parsed_css) throw new Error("No CSS ?")
-        if (parsed_css.type !== "stylesheet") throw new Error("CSS isn't a stylesheet")
-        if (!parsed_css.stylesheet.rules) throw new Error("no CSS rules")
-
-        let rule = parsed_css.stylesheet.rules.find(rule => {
-          return rule.type == "rule" && (_.includes(rule.selectors, "." + word, 0) || _.includes(rule.selectors, "#" + word, 0)) // TODO: don't generalize class and ID selector
-        })
-
-        if (!rule) throw new Error("CSS rule not found")
-
-        if(compiled_css.map){
-          const smc = new SourceMapConsumer(compiled_css.map);
-          const srcPosition = smc.originalPositionFor({ line: rule.position.start.line, column: rule.position.start.column});
+        const rule: {rule: css.Rule; map: SourceMap.RawSourceMap;} = await this.findRule(found_fname, word);
+        if (rule.map) {
+          const smc: SourceMap.SourceMapConsumer = new SourceMapConsumer(rule.map);
+          const srcPosition: SourceMap.Position = smc.originalPositionFor({ line: rule.rule.position.start.line, column: rule.rule.position.start.column });
           position = new vscode.Position(srcPosition.line - 1 || 0, srcPosition.column);
         } else {
-          position = new vscode.Position(rule.position.start.line - 1 || 0, rule.position.start.column);
+          position = new vscode.Position(rule.rule.position.start.line - 1 || 0, rule.rule.position.start.column);
         }
-
-      } catch (error) {
-        //Error in parsing CSS
+      } catch(error){
         position = new vscode.Position(0, 1);
-        // console.log(parsed_css);
-        console.error(error);
       }
 
       return new vscode.Location(vscode.Uri.file(found_fname), position);
