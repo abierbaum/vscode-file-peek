@@ -148,13 +148,11 @@ class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
     if(potential_fnames.length >= 30)
       potential_fnames = potential_fnames.filter(file => !/node_modules/gi.test(file)).filter(file => !/bower_components/gi.test(file))
 
-    potential_fnames.map(file => this.findRuleAndMapInFile(file, selector))
-
     let ruleAndMap: RuleAndMap = null
 
     let found_fname: string = await (new Promise((resolve, reject) => detect(potential_fnames, async (file, callback) => {
       try {
-        ruleAndMap = await this.findRuleAndMapInFile(file, selector)
+        ruleAndMap = await this.findRuleAndMapInFile(file, selector) || ruleAndMap
         callback(null, true)
       } catch (error) {
         // findRuleAndMapInFile error
@@ -165,7 +163,7 @@ class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
     })) as Promise<string>)
 
     
-
+    
     return ruleAndMap
   }
 
