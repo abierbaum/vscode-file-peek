@@ -26,6 +26,10 @@ Contributions are greatly appreciated.  Please fork the repository and submit a 
 
 # Changelog
 
+## 1.2.4
+
+  * Crucial bug fix
+
 ## 1.2.3
 
   * Workaround for bug if large number of files exist
