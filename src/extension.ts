@@ -6,8 +6,10 @@ import * as _    from 'lodash';
 import {detect}  from 'async';
 import * as css from 'css';
 import * as less from 'less';
-import { SourceMapConsumer } from 'source-map';
 //TODO: Add Sass support
+
+import { SourceMapConsumer } from 'source-map';
+
 
 
 /**
@@ -18,6 +20,19 @@ import { SourceMapConsumer } from 'source-map';
  */
 interface CompiledCSS {
   css: string;
+  map: SourceMap.RawSourceMap;
+}
+
+/**
+ * @typedef RuleAndMap
+ * @type {object}
+ * @property {string} file - Stylesheet file.
+ * @property {css.Rule} rule - CSS rule.
+ * @property {Object|null} map - sourcemap object (null if compiled from css to css).
+ */
+interface RuleAndMap {
+  file: string;
+  rule: css.Rule;
   map: SourceMap.RawSourceMap;
 }
 
@@ -44,7 +59,7 @@ export function activate(context: vscode.ExtensionContext): void {
   // Register the definition provider
   context.subscriptions.push(
     vscode.languages.registerDefinitionProvider(peek_filter,
-      new PeekFileDefinitionProvider(search_file_extensions))
+      new PeekCSSDefinitionProvider(search_file_extensions))
   );
 }
 
@@ -55,7 +70,7 @@ export function deactivate(): void {
 /**
  * Provide the lookup so we can peek into the files.
  */
-class PeekFileDefinitionProvider implements vscode.DefinitionProvider {
+class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
   protected fileSearchExtensions: string[] = [];
 
   constructor(fileSearchExtensions: string[] = []) {
@@ -73,7 +88,7 @@ class PeekFileDefinitionProvider implements vscode.DefinitionProvider {
     switch (_.last(file.split("."))) {
       case "less":
         try {
-          const parsed_less: Less.RenderOutput = await less.render(file_text,  { filename: file, sourceMap: {} });
+          const parsed_less: Less.RenderOutput = await less.render(file_text, { filename: file, sourceMap: {} });
           return Object.assign({}, parsed_less, { map: JSON.parse(parsed_less.map) });
         } catch (error) {
           return { css: file_text, map: null };
@@ -89,9 +104,9 @@ class PeekFileDefinitionProvider implements vscode.DefinitionProvider {
    * @throws {Error} Can't parse or find rule in CSS
    * @param {string} file - file_name to parse and check for css selector
    * @param {string} word - CSS selector
-   * @return {Object} Object containing `rule` prop as the CSS rule and `map` prop and sourcemap 
+   * @return {Promise<RuleAndMap>} the file, css Rule and the sourcemap (or null if no sourcemap) 
    */
-  async findRule(file: string, word: string): Promise<{rule: css.Rule; map: SourceMap.RawSourceMap;}>{ 
+  async findRuleAndMapInFile(file: string, word: string): Promise<RuleAndMap> {
     try {
       const file_text: string = fs.readFileSync(file, "utf8");
       const compiled_css: CompiledCSS = await this.compileCSS(file, file_text);
@@ -107,49 +122,99 @@ class PeekFileDefinitionProvider implements vscode.DefinitionProvider {
       })
 
       if (!rule) throw new Error("CSS rule not found")
-      return { rule: rule, map: compiled_css.map };
-    } catch (e){
+      return { file: file, rule: rule, map: compiled_css.map };
+    } catch (e) {
       throw e
     }
   }
 
-  async provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Promise<vscode.Definition> {
-
-    const word: string = document.getText(document.getWordRangeAtPosition(position));
+  
+  /**
+   * Look through all style files (from fileSearchExtensions configuration) for the given selector.
+   * 
+   * @param {string} selector - the CSS selector (class or ID) to find.
+   * @returns {Promise<RuleAndMap>} file, css Rule and map (if found)
+   * 
+   * @memberOf PeekFileDefinitionProvider
+   */
+  async findRuleAndMap(selector: string): Promise<RuleAndMap> {
 
     const file_searches: any = await Promise.all(this.fileSearchExtensions.map(type => vscode.workspace.findFiles(`**/*${type}`, "")));
     const potential_fnames: string[] = _.flatten(file_searches).map(uri => (uri as any).fsPath);
 
+    potential_fnames.map(file => this.findRuleAndMapInFile(file, selector));
+
+    let ruleAndMap: RuleAndMap = null;
+
     let found_fname: string = await (new Promise((resolve, reject) => detect(potential_fnames, async (file, callback) => {
       try {
-        await this.findRule(file, word);
+        ruleAndMap = await this.findRuleAndMapInFile(file, selector);
         callback(null, true);
-      } catch(error){
-        console.log(error);
+      } catch (error) {
+        // findRuleAndMapInFile error
       }
     }, function (err, result) {
       resolve(result);
     })) as Promise<string>);
 
-    found_fname = found_fname || potential_fnames[0];
+    
 
-    if (found_fname) {
-      console.log('found: ' + found_fname);
+    return ruleAndMap;
+  }
+
+  
+  /**
+   * Find the selector given the document and the current cursor position.
+   * This is found by iterating forwards and backwards from the position to find a valid CSS class/id
+   * 
+   * @param {vscode.TextDocument} document - The Document to check
+   * @param {vscode.Position} position - The current cursor position
+   * @returns {string} The valid CSS class/ID
+   * 
+   * @memberOf PeekFileDefinitionProvider
+   */
+  findSelector(document: vscode.TextDocument, position: vscode.Position): string {
+    const line: string = document.lineAt(position).text;
+
+    let startRange: vscode.Position = position;
+    let endRange: vscode.Position = position;
+
+    while (startRange.character > 0 && line.charAt(startRange.character - 1) != " " && line.charAt(startRange.character - 1) != "'" && line.charAt(startRange.character - 1) != '"')
+      startRange = startRange.translate(0, -1);
+
+    while (endRange.character < line.length - 1 && line.charAt(endRange.character) != " " && line.charAt(endRange.character) != "'" && line.charAt(endRange.character) != '"')
+      endRange = endRange.translate(0, +1);
+
+    return document.getText(new vscode.Range(startRange, endRange));
+  }
+
+
+  
+  /**
+   * Provide the definition. This is a required method for {@link vscode.DefinitionProvider}
+   * 
+   * @param {vscode.TextDocument} document
+   * @param {vscode.Position} position
+   * @param {vscode.CancellationToken} token
+   * @returns {Promise<vscode.Definition>}
+   * 
+   * @memberOf PeekFileDefinitionProvider
+   */
+  async provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Promise<vscode.Definition> {
+    const selector: string = this.findSelector(document, position);
+    const ruleAndMap: RuleAndMap = await this.findRuleAndMap(selector);
+
+    if (ruleAndMap) {
       let position: vscode.Position = null;
-      try {
-        const rule: {rule: css.Rule; map: SourceMap.RawSourceMap;} = await this.findRule(found_fname, word);
-        if (rule.map) {
-          const smc: SourceMap.SourceMapConsumer = new SourceMapConsumer(rule.map);
-          const srcPosition: SourceMap.Position = smc.originalPositionFor({ line: rule.rule.position.start.line, column: rule.rule.position.start.column });
-          position = new vscode.Position(srcPosition.line - 1 || 0, srcPosition.column);
-        } else {
-          position = new vscode.Position(rule.rule.position.start.line - 1 || 0, rule.rule.position.start.column);
-        }
-      } catch(error){
-        position = new vscode.Position(0, 1);
+      if (ruleAndMap.map) {
+        const smc: SourceMap.SourceMapConsumer = new SourceMapConsumer(ruleAndMap.map);
+        const srcPosition: SourceMap.Position = smc.originalPositionFor({ line: ruleAndMap.rule.position.start.line, column: ruleAndMap.rule.position.start.column });
+        position = new vscode.Position(srcPosition.line - 1 || 0, srcPosition.column);
+      } else {
+        position = new vscode.Position(ruleAndMap.rule.position.start.line - 1 || 0, ruleAndMap.rule.position.start.column);
       }
 
-      return new vscode.Location(vscode.Uri.file(found_fname), position);
+      return new vscode.Location(vscode.Uri.file(ruleAndMap.file), position);
     }
 
     return null;
