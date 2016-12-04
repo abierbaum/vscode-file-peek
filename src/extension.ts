@@ -123,7 +123,8 @@ class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
       if (!rule) throw new Error('CSS rule not found')
       return { file: file, rule: rule, map: compiled_css.map }
     } catch (e) {
-      throw e
+      // console.log(e);
+      // throw e
     }
   }
 
@@ -139,7 +140,13 @@ class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
   async findRuleAndMap(selector: string): Promise<RuleAndMap> {
 
     const file_searches: any = await Promise.all(this.fileSearchExtensions.map(type => vscode.workspace.findFiles(`**/*${type}`, '')))
-    const potential_fnames: string[] = _.flatten(file_searches).map(uri => (uri as any).fsPath)
+    let potential_fnames: string[] = _.flatten(file_searches).map(uri => (uri as any).fsPath)
+    
+    // BUG WORKAROUND
+    // If there are a lot of files to parse and test, then filter node_modules and bower_components files to reduce number of files to test
+    // If we have too many files to test, this currently fails and we get no definition, that's why we do this
+    if(potential_fnames.length >= 30)
+      potential_fnames = potential_fnames.filter(file => !/node_modules/gi.test(file)).filter(file => !/bower_components/gi.test(file))
 
     potential_fnames.map(file => this.findRuleAndMapInFile(file, selector))
 
@@ -151,6 +158,7 @@ class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
         callback(null, true)
       } catch (error) {
         // findRuleAndMapInFile error
+        console.log("error");
       }
     }, function (err, result) {
       resolve(result)
