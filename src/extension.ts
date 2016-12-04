@@ -158,7 +158,7 @@ class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
         callback(null, true)
       } catch (error) {
         // findRuleAndMapInFile error
-        console.log("error");
+        console.log('error')
       }
     }, function (err, result) {
       resolve(result)
