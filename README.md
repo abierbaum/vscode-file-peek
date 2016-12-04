@@ -22,6 +22,11 @@ Contributions are greatly appreciated.  Please fork the repository and submit a 
 
 # Changelog
 
+## 1.2.2
+
+  * Better recognition of CSS selector word from cursor position
+  * Optimize code for fewer file lookups
+
 ## 1.2.1
 
   * Fix README typo

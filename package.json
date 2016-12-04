@@ -1,85 +1,85 @@
 {
-  "name": "vscode-css-peek",
-  "displayName": "CSS Peek",
-  "description": "Allow peeking to css ID and class strings as definitions from html files to respective CSS. Allows peek and goto definition.",
-  "icon": "images/css_peek_icon.png",
-  "license": "MIT",
-  "keywords": [
-    "peek",
-    "definition",
-    "css"
-  ],
-  "version": "1.2.1",
-  "publisher": "pranaygp",
-  "bugs": {
-    "url": "https://github.com/pranaygp/vscode-css-peek/issues"
-  },
-  "homepage": "https://github.com/pranaygp/vscode-css-peek/blob/master/README.md",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pranaygp/vscode-css-peek.git"
-  },
-  "engines": {
-    "vscode": "^0.10.6"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "*"
-  ],
-  "main": "./out/src/extension",
-  "contributes": {
-    "commands": [],
-    "configuration": {
-      "type": "object",
-      "title": "CSS Peek extension configuration",
-      "properties": {
-        "css_peek.activeLanguages": {
-          "type": "array",
-          "default": [
-            "html",
-            "ejs"
-          ],
-          "items": {
-            "type": "string"
-          },
-          "description": "A list of vscode language names where the extension should be used."
-        },
-        "css_peek.searchFileExtensions": {
-          "type": "array",
-          "default": [
-            ".css",
-            ".scss",
-            ".less"
-          ],
-          "items": {
-            "type": "string"
-          },
-          "description": "A list of extensions that should be tried for finding peeked files."
+    "name": "vscode-css-peek",
+    "displayName": "CSS Peek",
+    "description": "Allow peeking to css ID and class strings as definitions from html files to respective CSS. Allows peek and goto definition.",
+    "icon": "images/css_peek_icon.png",
+    "license": "MIT",
+    "keywords": [
+        "peek",
+        "definition",
+        "css"
+    ],
+    "version": "1.2.2",
+    "publisher": "pranaygp",
+    "bugs": {
+        "url": "https://github.com/pranaygp/vscode-css-peek/issues"
+    },
+    "homepage": "https://github.com/pranaygp/vscode-css-peek/blob/master/README.md",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pranaygp/vscode-css-peek.git"
+    },
+    "engines": {
+        "vscode": "^0.10.6"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./out/src/extension",
+    "contributes": {
+        "commands": [],
+        "configuration": {
+            "type": "object",
+            "title": "CSS Peek extension configuration",
+            "properties": {
+                "css_peek.activeLanguages": {
+                    "type": "array",
+                    "default": [
+                        "html",
+                        "ejs"
+                    ],
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A list of vscode language names where the extension should be used."
+                },
+                "css_peek.searchFileExtensions": {
+                    "type": "array",
+                    "default": [
+                        ".css",
+                        ".scss",
+                        ".less"
+                    ],
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A list of extensions that should be tried for finding peeked files."
+                }
+            }
         }
-      }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run lint && node ./node_modules/vscode/bin/compile",
+        "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install && typings install",
+        "lint": "eslint src/ --ext .ts"
+    },
+    "devDependencies": {
+        "eslint": "^3.11.1",
+        "eslint-plugin-import": "^2.2.0",
+        "typescript": "^1.8.10",
+        "typescript-eslint-parser": "^1.0.0",
+        "vsce": "^1.5.0",
+        "vscode": "^0.11.13"
+    },
+    "dependencies": {
+        "async": "^2.1.4",
+        "css": "^2.2.1",
+        "less": "^2.7.1",
+        "lodash": "^4.17.2",
+        "source-map": "^0.5.6"
     }
-  },
-  "scripts": {
-    "vscode:prepublish": "npm run lint && node ./node_modules/vscode/bin/compile",
-    "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install && typings install",
-    "lint": "eslint src/ --ext .ts"
-  },
-  "devDependencies": {
-    "eslint": "^3.11.1",
-    "eslint-plugin-import": "^2.2.0",
-    "typescript": "^1.8.10",
-    "typescript-eslint-parser": "^1.0.0",
-    "vsce": "^1.5.0",
-    "vscode": "^0.11.13"
-  },
-  "dependencies": {
-    "async": "^2.1.4",
-    "css": "^2.2.1",
-    "less": "^2.7.1",
-    "lodash": "^4.17.2",
-    "source-map": "^0.5.6"
-  }
 }
