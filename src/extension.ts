@@ -1,14 +1,13 @@
-import * as vscode from 'vscode';
+import * as vscode from 'vscode'
 
-import * as fs   from 'fs';
-import * as path from 'path';
-import * as _    from 'lodash';
-import {detect}  from 'async';
-import * as css from 'css';
-import * as less from 'less';
+import * as fs   from 'fs'
+import * as _    from 'lodash'
+import {detect}  from 'async'
+import * as css from 'css'
+import * as less from 'less'
 //TODO: Add Sass support
 
-import { SourceMapConsumer } from 'source-map';
+import { SourceMapConsumer } from 'source-map'
 
 
 
@@ -41,26 +40,26 @@ interface RuleAndMap {
 export function activate(context: vscode.ExtensionContext): void {
 
   const config: vscode.WorkspaceConfiguration =
-    vscode.workspace.getConfiguration('css_peek');
+    vscode.workspace.getConfiguration('css_peek')
 
   const active_languages: Array<string> =
-    (config.get('activeLanguages') as Array<string>);
+    (config.get('activeLanguages') as Array<string>)
 
   const search_file_extensions: Array<string> =
-    (config.get('searchFileExtensions') as Array<string>);
+    (config.get('searchFileExtensions') as Array<string>)
 
   const peek_filter: vscode.DocumentFilter[] = active_languages.map((language: string) => (
     {
       language: language,
       scheme: 'file'
     }
-  ));
+  ))
 
   // Register the definition provider
   context.subscriptions.push(
     vscode.languages.registerDefinitionProvider(peek_filter,
       new PeekCSSDefinitionProvider(search_file_extensions))
-  );
+  )
 }
 
 // this method is called when your extension is deactivated
@@ -74,7 +73,7 @@ class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
   protected fileSearchExtensions: string[] = [];
 
   constructor(fileSearchExtensions: string[] = []) {
-    this.fileSearchExtensions = fileSearchExtensions;
+    this.fileSearchExtensions = fileSearchExtensions
   }
 
   /**
@@ -85,16 +84,16 @@ class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
    * @return {CompiledCSS} Object containing `css` prop as compiled CSS and `map` prop and sourcemap 
    */
   async compileCSS(file: string, file_text: string): Promise<CompiledCSS> {
-    switch (_.last(file.split("."))) {
-      case "less":
+    switch (_.last(file.split('.'))) {
+      case 'less':
         try {
-          const parsed_less: Less.RenderOutput = await less.render(file_text, { filename: file, sourceMap: {} });
-          return Object.assign({}, parsed_less, { map: JSON.parse(parsed_less.map) });
+          const parsed_less: Less.RenderOutput = await less.render(file_text, { filename: file, sourceMap: {} })
+          return Object.assign({}, parsed_less, { map: JSON.parse(parsed_less.map) })
         } catch (error) {
-          return { css: file_text, map: null };
+          return { css: file_text, map: null }
         }
       default:
-        return { css: file_text, map: null };
+        return { css: file_text, map: null }
     }
   }
 
@@ -108,21 +107,21 @@ class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
    */
   async findRuleAndMapInFile(file: string, word: string): Promise<RuleAndMap> {
     try {
-      const file_text: string = fs.readFileSync(file, "utf8");
-      const compiled_css: CompiledCSS = await this.compileCSS(file, file_text);
-      const parsed_css: css.Stylesheet = css.parse(compiled_css.css, { silent: true, source: file }); // css Stylesheet type
+      const file_text: string = fs.readFileSync(file, 'utf8')
+      const compiled_css: CompiledCSS = await this.compileCSS(file, file_text)
+      const parsed_css: css.Stylesheet = css.parse(compiled_css.css, { silent: true, source: file }) // css Stylesheet type
 
 
-      if (!parsed_css) throw new Error("No CSS ?")
-      if (parsed_css.type !== "stylesheet") throw new Error("CSS isn't a stylesheet")
-      if (!parsed_css.stylesheet.rules) throw new Error("no CSS rules")
+      if (!parsed_css) throw new Error('No CSS ?')
+      if (parsed_css.type !== 'stylesheet') throw new Error('CSS isn\'t a stylesheet')
+      if (!parsed_css.stylesheet.rules) throw new Error('no CSS rules')
 
       const rule: css.Rule = parsed_css.stylesheet.rules.find((rule: css.Rule) => {
-        return rule.type == "rule" && (_.includes(rule.selectors, "." + word, 0) || _.includes(rule.selectors, "#" + word, 0)) // TODO: don't generalize class and ID selector
+        return rule.type == 'rule' && (_.includes(rule.selectors, '.' + word, 0) || _.includes(rule.selectors, '#' + word, 0)) // TODO: don't generalize class and ID selector
       })
 
-      if (!rule) throw new Error("CSS rule not found")
-      return { file: file, rule: rule, map: compiled_css.map };
+      if (!rule) throw new Error('CSS rule not found')
+      return { file: file, rule: rule, map: compiled_css.map }
     } catch (e) {
       throw e
     }
@@ -139,27 +138,27 @@ class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
    */
   async findRuleAndMap(selector: string): Promise<RuleAndMap> {
 
-    const file_searches: any = await Promise.all(this.fileSearchExtensions.map(type => vscode.workspace.findFiles(`**/*${type}`, "")));
-    const potential_fnames: string[] = _.flatten(file_searches).map(uri => (uri as any).fsPath);
+    const file_searches: any = await Promise.all(this.fileSearchExtensions.map(type => vscode.workspace.findFiles(`**/*${type}`, '')))
+    const potential_fnames: string[] = _.flatten(file_searches).map(uri => (uri as any).fsPath)
 
-    potential_fnames.map(file => this.findRuleAndMapInFile(file, selector));
+    potential_fnames.map(file => this.findRuleAndMapInFile(file, selector))
 
-    let ruleAndMap: RuleAndMap = null;
+    let ruleAndMap: RuleAndMap = null
 
     let found_fname: string = await (new Promise((resolve, reject) => detect(potential_fnames, async (file, callback) => {
       try {
-        ruleAndMap = await this.findRuleAndMapInFile(file, selector);
-        callback(null, true);
+        ruleAndMap = await this.findRuleAndMapInFile(file, selector)
+        callback(null, true)
       } catch (error) {
         // findRuleAndMapInFile error
       }
     }, function (err, result) {
-      resolve(result);
-    })) as Promise<string>);
+      resolve(result)
+    })) as Promise<string>)
 
     
 
-    return ruleAndMap;
+    return ruleAndMap
   }
 
   
@@ -174,18 +173,18 @@ class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
    * @memberOf PeekFileDefinitionProvider
    */
   findSelector(document: vscode.TextDocument, position: vscode.Position): string {
-    const line: string = document.lineAt(position).text;
+    const line: string = document.lineAt(position).text
 
-    let startRange: vscode.Position = position;
-    let endRange: vscode.Position = position;
+    let startRange: vscode.Position = position
+    let endRange: vscode.Position = position
 
-    while (startRange.character > 0 && line.charAt(startRange.character - 1) != " " && line.charAt(startRange.character - 1) != "'" && line.charAt(startRange.character - 1) != '"')
-      startRange = startRange.translate(0, -1);
+    while (startRange.character > 0 && line.charAt(startRange.character - 1) != ' ' && line.charAt(startRange.character - 1) != '\'' && line.charAt(startRange.character - 1) != '"')
+      startRange = startRange.translate(0, -1)
 
-    while (endRange.character < line.length - 1 && line.charAt(endRange.character) != " " && line.charAt(endRange.character) != "'" && line.charAt(endRange.character) != '"')
-      endRange = endRange.translate(0, +1);
+    while (endRange.character < line.length - 1 && line.charAt(endRange.character) != ' ' && line.charAt(endRange.character) != '\'' && line.charAt(endRange.character) != '"')
+      endRange = endRange.translate(0, +1)
 
-    return document.getText(new vscode.Range(startRange, endRange));
+    return document.getText(new vscode.Range(startRange, endRange))
   }
 
 
@@ -201,22 +200,22 @@ class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
    * @memberOf PeekFileDefinitionProvider
    */
   async provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Promise<vscode.Definition> {
-    const selector: string = this.findSelector(document, position);
-    const ruleAndMap: RuleAndMap = await this.findRuleAndMap(selector);
+    const selector: string = this.findSelector(document, position)
+    const ruleAndMap: RuleAndMap = await this.findRuleAndMap(selector)
 
     if (ruleAndMap) {
-      let position: vscode.Position = null;
+      let position: vscode.Position = null
       if (ruleAndMap.map) {
-        const smc: SourceMap.SourceMapConsumer = new SourceMapConsumer(ruleAndMap.map);
-        const srcPosition: SourceMap.Position = smc.originalPositionFor({ line: ruleAndMap.rule.position.start.line, column: ruleAndMap.rule.position.start.column });
-        position = new vscode.Position(srcPosition.line - 1 || 0, srcPosition.column);
+        const smc: SourceMap.SourceMapConsumer = new SourceMapConsumer(ruleAndMap.map)
+        const srcPosition: SourceMap.Position = smc.originalPositionFor({ line: ruleAndMap.rule.position.start.line, column: ruleAndMap.rule.position.start.column })
+        position = new vscode.Position(srcPosition.line - 1 || 0, srcPosition.column)
       } else {
-        position = new vscode.Position(ruleAndMap.rule.position.start.line - 1 || 0, ruleAndMap.rule.position.start.column);
+        position = new vscode.Position(ruleAndMap.rule.position.start.line - 1 || 0, ruleAndMap.rule.position.start.column)
       }
 
-      return new vscode.Location(vscode.Uri.file(ruleAndMap.file), position);
+      return new vscode.Location(vscode.Uri.file(ruleAndMap.file), position)
     }
 
-    return null;
+    return null
   }
 }
