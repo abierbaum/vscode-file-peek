@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/pranaygp/vscode-css-peek.svg?branch=master)](https://travis-ci.org/pranaygp/vscode-css-peek)
+
 # Functionality
 
 This extension extends HTML and ejs code editing with `Go To Definition` support for css (classes and IDs) found in strings within the source code.

@@ -5,7 +5,7 @@ import * as _    from 'lodash'
 import {detect}  from 'async'
 import * as css from 'css'
 import * as less from 'less'
-import * as HTMLLanguageService from 'vscode-html-languageservice';
+import * as HTMLLanguageService from 'vscode-html-languageservice'
 //TODO: Add Sass support
 
 import { SourceMapConsumer } from 'source-map'
@@ -107,7 +107,7 @@ export class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
    * @return {Promise<RuleAndMap>} the file, css Rule and the sourcemap (or null if no sourcemap) 
    */
   static async findRuleAndMapInFile(file: string, word: {attribute: string, value: string}): Promise<RuleAndMap> {
-    const selector: string = word.attribute === 'class' ? '.' + word.value : '#' + word.value;
+    const selector: string = word.attribute === 'class' ? '.' + word.value : '#' + word.value
     const file_text: string = fs.readFileSync(file, 'utf8')
     const compiled_css: CompiledCSS = await PeekCSSDefinitionProvider.compileCSS(file, file_text)
     const parsed_css: css.Stylesheet = css.parse(compiled_css.css, { silent: true, source: file }) // css Stylesheet type
@@ -188,21 +188,21 @@ export class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
 
     const selectorWord: string = document.getText(new vscode.Range(startRange, endRange))
 
-    const htmlScanner: HTMLLanguageService.Scanner = HTMLLanguageService.getLanguageService().createScanner(line);
-    let attribute: string = null;
-    while (htmlScanner.scan() && HTMLLanguageService.TokenType[htmlScanner.getTokenType()] !== "EOS") {
-      if (HTMLLanguageService.TokenType[htmlScanner.getTokenType()] === "AttributeName") {
-        attribute = htmlScanner.getTokenText().toLowerCase();
+    const htmlScanner: HTMLLanguageService.Scanner = HTMLLanguageService.getLanguageService().createScanner(line)
+    let attribute: string = null
+    while (htmlScanner.scan() && HTMLLanguageService.TokenType[htmlScanner.getTokenType()] !== 'EOS') {
+      if (HTMLLanguageService.TokenType[htmlScanner.getTokenType()] === 'AttributeName') {
+        attribute = htmlScanner.getTokenText().toLowerCase()
       }
-      if (HTMLLanguageService.TokenType[htmlScanner.getTokenType()] === "AttributeValue") {
-        if (attribute === "class" || attribute === "id")
-          if (eval(htmlScanner.getTokenText()).split(" ").includes(selectorWord)) {
+      if (HTMLLanguageService.TokenType[htmlScanner.getTokenType()] === 'AttributeValue') {
+        if (attribute === 'class' || attribute === 'id')
+          if (eval(htmlScanner.getTokenText()).split(' ').includes(selectorWord)) {
             return { attribute: attribute, value: selectorWord }
           }
       }
     }
 
-    throw "Not a Valid CSS selector";
+    throw 'Not a Valid CSS selector'
 
   }
 
@@ -221,7 +221,7 @@ export class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
   async provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Promise<vscode.Definition> {
     const selector: {attribute: string, value: string} = PeekCSSDefinitionProvider.findSelector(document, position)
     if(!selector) {
-      return null;
+      return null
     }
 
     const ruleAndMap: RuleAndMap = await this.findRuleAndMap(selector)
