@@ -5,6 +5,7 @@ import * as _    from 'lodash'
 import {detect}  from 'async'
 import * as css from 'css'
 import * as less from 'less'
+import * as HTMLLanguageService from 'vscode-html-languageservice';
 //TODO: Add Sass support
 
 import { SourceMapConsumer } from 'source-map'
@@ -69,7 +70,7 @@ export function deactivate(): void {
 /**
  * Provide the lookup so we can peek into the files.
  */
-class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
+export class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
   protected fileSearchExtensions: string[] = [];
 
   constructor(fileSearchExtensions: string[] = []) {
@@ -83,7 +84,7 @@ class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
    * @param {string} file_text - contents of the file
    * @return {CompiledCSS} Object containing `css` prop as compiled CSS and `map` prop and sourcemap 
    */
-  async compileCSS(file: string, file_text: string): Promise<CompiledCSS> {
+  static async compileCSS(file: string, file_text: string): Promise<CompiledCSS> {
     switch (_.last(file.split('.'))) {
       case 'less':
         try {
@@ -102,83 +103,78 @@ class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
    * Throws an error if it can't find the rule.
    * @throws {Error} Can't parse or find rule in CSS
    * @param {string} file - file_name to parse and check for css selector
-   * @param {string} word - CSS selector
+   * @param {{attribute: string, value: string}} word - CSS selector
    * @return {Promise<RuleAndMap>} the file, css Rule and the sourcemap (or null if no sourcemap) 
    */
-  async findRuleAndMapInFile(file: string, word: string): Promise<RuleAndMap> {
-    try {
-      const file_text: string = fs.readFileSync(file, 'utf8')
-      const compiled_css: CompiledCSS = await this.compileCSS(file, file_text)
-      const parsed_css: css.Stylesheet = css.parse(compiled_css.css, { silent: true, source: file }) // css Stylesheet type
+  static async findRuleAndMapInFile(file: string, word: {attribute: string, value: string}): Promise<RuleAndMap> {
+    const selector: string = word.attribute === 'class' ? '.' + word.value : '#' + word.value;
+    const file_text: string = fs.readFileSync(file, 'utf8')
+    const compiled_css: CompiledCSS = await PeekCSSDefinitionProvider.compileCSS(file, file_text)
+    const parsed_css: css.Stylesheet = css.parse(compiled_css.css, { silent: true, source: file }) // css Stylesheet type
 
 
-      if (!parsed_css) throw new Error('No CSS ?')
-      if (parsed_css.type !== 'stylesheet') throw new Error('CSS isn\'t a stylesheet')
-      if (!parsed_css.stylesheet.rules) throw new Error('no CSS rules')
+    if (!parsed_css) throw new Error('No CSS ?')
+    if (parsed_css.type !== 'stylesheet') throw new Error('CSS isn\'t a stylesheet')
+    if (!parsed_css.stylesheet.rules) throw new Error('no CSS rules')
 
-      const rule: css.Rule = parsed_css.stylesheet.rules.find((rule: css.Rule) => {
-        return rule.type == 'rule' && (_.includes(rule.selectors, '.' + word, 0) || _.includes(rule.selectors, '#' + word, 0)) // TODO: don't generalize class and ID selector
-      })
+    const rule: css.Rule = parsed_css.stylesheet.rules.filter((node: css.Node) => node.type === 'rule').find((rule: css.Rule) => {
+      return (_.includes(rule.selectors, selector, 0))
+    })
 
-      if (!rule) throw new Error('CSS rule not found')
-      return { file: file, rule: rule, map: compiled_css.map }
-    } catch (e) {
-      // console.log(e);
-      // throw e
-    }
+    if (!rule) throw new Error('CSS rule not found in ' + file)
+    return { file: file, rule: rule, map: compiled_css.map } // map can be null
   }
 
-  
+
   /**
    * Look through all style files (from fileSearchExtensions configuration) for the given selector.
    * 
-   * @param {string} selector - the CSS selector (class or ID) to find.
+   * @param {{attribute: string, value: string}} selector - the CSS selector (class or ID) to find.
    * @returns {Promise<RuleAndMap>} file, css Rule and map (if found)
    * 
    * @memberOf PeekFileDefinitionProvider
    */
-  async findRuleAndMap(selector: string): Promise<RuleAndMap> {
+  async findRuleAndMap(selector: {attribute: string, value: string}): Promise<RuleAndMap> {
 
     const file_searches: any = await Promise.all(this.fileSearchExtensions.map(type => vscode.workspace.findFiles(`**/*${type}`, '')))
     let potential_fnames: string[] = _.flatten(file_searches).map(uri => (uri as any).fsPath)
-    
+
     // BUG WORKAROUND
     // If there are a lot of files to parse and test, then filter node_modules and bower_components files to reduce number of files to test
     // If we have too many files to test, this currently fails and we get no definition, that's why we do this
-    if(potential_fnames.length >= 30)
+    if (potential_fnames.length >= 30)
       potential_fnames = potential_fnames.filter(file => !/node_modules/gi.test(file)).filter(file => !/bower_components/gi.test(file))
 
     let ruleAndMap: RuleAndMap = null
 
     let found_fname: string = await (new Promise((resolve, reject) => detect(potential_fnames, async (file, callback) => {
       try {
-        ruleAndMap = await this.findRuleAndMapInFile(file, selector) || ruleAndMap
+        ruleAndMap = await PeekCSSDefinitionProvider.findRuleAndMapInFile(file, selector) || ruleAndMap
         callback(null, true)
       } catch (error) {
+        callback(error, false)
         // findRuleAndMapInFile error
-        console.log('error')
+        // console.log('error')
       }
     }, function (err, result) {
       resolve(result)
     })) as Promise<string>)
 
-    
-    
     return ruleAndMap
   }
 
-  
+
   /**
    * Find the selector given the document and the current cursor position.
    * This is found by iterating forwards and backwards from the position to find a valid CSS class/id
    * 
    * @param {vscode.TextDocument} document - The Document to check
    * @param {vscode.Position} position - The current cursor position
-   * @returns {string} The valid CSS class/ID
+   * @returns {{attribute: string, value: string}} The valid CSS selector
    * 
    * @memberOf PeekFileDefinitionProvider
    */
-  findSelector(document: vscode.TextDocument, position: vscode.Position): string {
+  static findSelector(document: vscode.TextDocument, position: vscode.Position): {attribute: string, value: string} {
     const line: string = document.lineAt(position).text
 
     let startRange: vscode.Position = position
@@ -190,11 +186,28 @@ class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
     while (endRange.character < line.length - 1 && line.charAt(endRange.character) != ' ' && line.charAt(endRange.character) != '\'' && line.charAt(endRange.character) != '"')
       endRange = endRange.translate(0, +1)
 
-    return document.getText(new vscode.Range(startRange, endRange))
+    const selectorWord: string = document.getText(new vscode.Range(startRange, endRange))
+
+    const htmlScanner: HTMLLanguageService.Scanner = HTMLLanguageService.getLanguageService().createScanner(line);
+    let attribute: string = null;
+    while (htmlScanner.scan() && HTMLLanguageService.TokenType[htmlScanner.getTokenType()] !== "EOS") {
+      if (HTMLLanguageService.TokenType[htmlScanner.getTokenType()] === "AttributeName") {
+        attribute = htmlScanner.getTokenText().toLowerCase();
+      }
+      if (HTMLLanguageService.TokenType[htmlScanner.getTokenType()] === "AttributeValue") {
+        if (attribute === "class" || attribute === "id")
+          if (eval(htmlScanner.getTokenText()).split(" ").includes(selectorWord)) {
+            return { attribute: attribute, value: selectorWord }
+          }
+      }
+    }
+
+    throw "Not a Valid CSS selector";
+
   }
 
 
-  
+
   /**
    * Provide the definition. This is a required method for {@link vscode.DefinitionProvider}
    * 
@@ -206,7 +219,11 @@ class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
    * @memberOf PeekFileDefinitionProvider
    */
   async provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Promise<vscode.Definition> {
-    const selector: string = this.findSelector(document, position)
+    const selector: {attribute: string, value: string} = PeekCSSDefinitionProvider.findSelector(document, position)
+    if(!selector) {
+      return null;
+    }
+
     const ruleAndMap: RuleAndMap = await this.findRuleAndMap(selector)
 
     if (ruleAndMap) {
