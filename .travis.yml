@@ -4,6 +4,9 @@ language: node_js
 node_js:
   - "6"
 
+env:
+  - CODE_TESTS_WORKSPACE=$TRAVIS_BUILD_DIR/test/test_files
+
 os:
   - osx
   - linux
