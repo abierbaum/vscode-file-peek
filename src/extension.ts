@@ -48,6 +48,9 @@ export function activate(context: vscode.ExtensionContext): void {
 
   const search_file_extensions: Array<string> =
     (config.get('searchFileExtensions') as Array<string>)
+  
+  const exclude: Array<string> = 
+    (config.get('exclude') as Array<string>)
 
   const peek_filter: vscode.DocumentFilter[] = active_languages.map((language: string) => (
     {
@@ -59,7 +62,7 @@ export function activate(context: vscode.ExtensionContext): void {
   // Register the definition provider
   context.subscriptions.push(
     vscode.languages.registerDefinitionProvider(peek_filter,
-      new PeekCSSDefinitionProvider(search_file_extensions))
+      new PeekCSSDefinitionProvider(search_file_extensions, exclude))
   )
 }
 
@@ -72,9 +75,11 @@ export function deactivate(): void {
  */
 export class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
   protected fileSearchExtensions: string[] = [];
+  protected exclude: string[] = [];
 
-  constructor(fileSearchExtensions: string[] = []) {
+  constructor(fileSearchExtensions: string[] = [], exclude: string[] = []) {
     this.fileSearchExtensions = fileSearchExtensions
+    this.exclude = exclude
   }
 
   /**
@@ -139,11 +144,11 @@ export class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
     const file_searches: any = await Promise.all(this.fileSearchExtensions.map(type => vscode.workspace.findFiles(`**/*${type}`, '')))
     let potential_fnames: string[] = _.flatten(file_searches).map(uri => (uri as any).fsPath)
 
-    // BUG WORKAROUND
-    // If there are a lot of files to parse and test, then filter node_modules and bower_components files to reduce number of files to test
-    // If we have too many files to test, this currently fails and we get no definition, that's why we do this
-    if (potential_fnames.length >= 30)
-      potential_fnames = potential_fnames.filter(file => !/node_modules/gi.test(file)).filter(file => !/bower_components/gi.test(file))
+    this.exclude
+      .map(expression => new RegExp(expression, 'gi'))
+      .forEach(regex => {
+        potential_fnames = potential_fnames.filter(file => !regex.test(file))
+      })
 
     let ruleAndMap: RuleAndMap = null
 

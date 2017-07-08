@@ -196,11 +196,15 @@ describe("Extension Tests", () => {
 	})
 
 	describe("findRuleAndMap", () => {
-		const definitionProvider: myExtension.PeekCSSDefinitionProvider = new myExtension.PeekCSSDefinitionProvider(["css", "less", "scss"]);
+		const definitionProvider: myExtension.PeekCSSDefinitionProvider = new myExtension.PeekCSSDefinitionProvider(["css", "less", "scss"], ['node_modules']);
 
 		const selector: { attribute: string; value: string; } = {
 			attribute: "class",
 			value: "test"
+		}
+		const excludedSelector: { attribute: string; value: string; } = {
+			attribute: "class",
+			value: "common"
 		}
 		const invalidSelector = Object.assign({}, selector, { value: "this_does-not-exist" });
 
@@ -257,6 +261,15 @@ describe("Extension Tests", () => {
 				}).catch(reason => {
 					done(reason);
 				})
+		})
+
+		it("returns null if rule for the given selector exists in an excluded pattern", done => {
+			definitionProvider.findRuleAndMap(excludedSelector).then(ruleAndMap => {
+				assert.ifError(ruleAndMap);
+				done();
+			}).catch(reason => {
+				done(reason);
+			})
 		})
 
 	})

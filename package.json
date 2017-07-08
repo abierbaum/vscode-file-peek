@@ -57,6 +57,17 @@
             "type": "string"
           },
           "description": "A list of extensions that should be tried for finding peeked files."
+        },
+        "css_peek.exclude": {
+          "type": "array",
+          "default": [
+            "node_modules",
+            "bower_components"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Files are ignored from the CSS lookup if they match any of these Regular Expressions (regex)."
         }
       }
     }
