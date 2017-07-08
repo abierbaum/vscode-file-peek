@@ -20,15 +20,15 @@ See editor docs for more details
  * [Visual Studio Code: Goto Definition](https://code.visualstudio.com/docs/editor/editingevolved#_go-to-definition)
  * [Visual Studio Code: Peek](https://code.visualstudio.com/docs/editor/editingevolved#_peek)
 
-# Known Bugs
-
-* Currently, if too many style files exist, we can't parse through all of them in time. By the time we return a definition, vscode moves on and ignores it. [ Temporary mitigation in ver 1.2.3 ]
-
 # Contributing
 
 Contributions are greatly appreciated.  Please fork the repository and submit a pull request.
 
 # Changelog
+
+## 1.3.0
+
+  * Add configuration option to ignore file from CSS lookup
 
 ## 1.2.4
 
