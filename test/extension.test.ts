@@ -97,8 +97,7 @@ describe("Extension Tests", () => {
 						// assert.equal(css.map, null);
 						done();
 					}).catch(e => {
-						assert.fail();
-						done();
+						throw Error(e);
 					})
 				} else {
 					console.error("could not open css file");
