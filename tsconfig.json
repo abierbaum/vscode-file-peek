@@ -3,12 +3,13 @@
 		"module": "commonjs",
 		"target": "es6",
 		"outDir": "out",
-		"noLib": true,
+		"lib": [ "es6" ],
 		"sourceMap": true,
-        "rootDir": "."
+		"rootDir": "."
 	},
 	"exclude": [
 		"node_modules",
-		"test/test_files/issue_2"
+		".vscode-test",
+		"test/test_files"
 	]
 }
