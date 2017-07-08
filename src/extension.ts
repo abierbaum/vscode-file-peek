@@ -124,7 +124,7 @@ export class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
 
     const rule: css.Rule = parsed_css.stylesheet.rules.filter((node: css.Node) => node.type === 'rule').find((rule: css.Rule) => {
       return (_.includes(rule.selectors, selector, 0))
-    })
+    }) as css.Rule
 
     if (!rule) throw new Error('CSS rule not found in ' + file)
     return { file: file, rule: rule, map: compiled_css.map } // map can be null
