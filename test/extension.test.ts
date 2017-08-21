@@ -197,15 +197,19 @@ describe("Extension Tests", () => {
 	describe("findRuleAndMap", () => {
 		const definitionProvider: myExtension.PeekCSSDefinitionProvider = new myExtension.PeekCSSDefinitionProvider(["css", "less", "scss"], ['node_modules']);
 
-		const selector: { attribute: string; value: string; } = {
+		const testSelector: { attribute: string; value: string; } = {
 			attribute: "class",
 			value: "test"
+		}
+		const test2Selector: { attribute: string; value: string; } = {
+			attribute: "id",
+			value: "test-2"
 		}
 		const excludedSelector: { attribute: string; value: string; } = {
 			attribute: "class",
 			value: "common"
 		}
-		const invalidSelector = Object.assign({}, selector, { value: "this_does-not-exist" });
+		const invalidSelector = Object.assign({}, testSelector, { value: "this_does-not-exist" });
 
 		const rule = {
 			type: 'rule',
@@ -251,15 +255,26 @@ describe("Extension Tests", () => {
 		})
 
 		it("can find a simple rule in a css file", done => {
-				definitionProvider.findRuleAndMap(selector).then(ruleAndMap => {
-					assert.ok(ruleAndMap);
-					assert.equal(ruleAndMap.file, `${vscode.workspace.rootPath}/stylesheet.css`);
-					assert.equal(ruleAndMap.map, null);
-					assert.deepEqual(ruleAndMap.rule, rule);
-					done();
-				}).catch(reason => {
-					done(reason);
-				})
+			definitionProvider.findRuleAndMap(testSelector).then(ruleAndMap => {
+				assert.ok(ruleAndMap);
+				assert.equal(ruleAndMap.file, `${vscode.workspace.rootPath}/stylesheet.css`);
+				assert.equal(ruleAndMap.map, null);
+				assert.deepEqual(ruleAndMap.rule, rule);
+				done();
+			}).catch(reason => {
+				done(reason);
+			})
+		})
+
+		it("can find a scoped rule in a css file", done => {
+			definitionProvider.findRuleAndMap(test2Selector).then(ruleAndMap => {
+				assert.ok(ruleAndMap);
+				assert.equal(ruleAndMap.file, `${vscode.workspace.rootPath}/stylesheet.css`);
+				assert.equal(ruleAndMap.map, null);
+				done();
+			}).catch(reason => {
+				done(reason);
+			})
 		})
 
 		it("returns null if rule for the given selector exists in an excluded pattern", done => {

@@ -5,3 +5,7 @@ h1 {
 .test {
   background-color: #fff; 
 }
+
+.container #test-2 {
+  background-color: #f00; 
+}

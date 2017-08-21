@@ -123,7 +123,10 @@ export class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
     if (!parsed_css.stylesheet.rules) throw new Error('no CSS rules')
 
     const rule: css.Rule = parsed_css.stylesheet.rules.filter((node: css.Node) => node.type === 'rule').find((rule: css.Rule) => {
-      return (_.includes(rule.selectors, selector, 0))
+      // TODO: this is handling a specific edge case, which feels like a hack.
+      // Using the CSS language service can make this less hacky. Add tests for more edge cases
+      const directSelectors = rule.selectors.map(s => _.last(s.split(' ')));
+      return (_.includes(directSelectors , selector))
     }) as css.Rule
 
     if (!rule) throw new Error('CSS rule not found in ' + file)
