@@ -20,7 +20,7 @@
         "url": "https://github.com/pranaygp/vscode-css-peek.git"
     },
     "engines": {
-        "vscode": "^0.10.6"
+        "vscode": "^1.1.4"
     },
     "categories": [
         "Other"
@@ -75,10 +75,10 @@
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
         "compile": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install && typings install",
+        "postinstall": "node ./node_modules/vscode/bin/install",
         "lint": "eslint src/ --ext .ts",
         "lint:fix": "npm run lint -- --fix",
-        "test": "nyc node ./node_modules/vscode/bin/test",
+        "test": "node ./node_modules/vscode/bin/test",
         "posttest": "nyc report --reporter=json && codecov -f coverage/*.json"
     },
     "devDependencies": {
@@ -91,10 +91,14 @@
         "nyc": "^10.0.0",
         "typescript": "^2.0.3",
         "typescript-eslint-parser": "^3.0.0",
-        "typings": "^2.0.0",
-        "vscode": "^1.0.0"
+        "vscode": "^1.1.5"
     },
     "dependencies": {
+        "@types/async": "^2.0.42",
+        "@types/css": "^0.0.30",
+        "@types/less": "^0.0.32",
+        "@types/lodash": "^4.14.74",
+        "@types/source-map": "^0.5.1",
         "async": "^2.1.4",
         "css": "^2.2.1",
         "less": "^2.7.1",
