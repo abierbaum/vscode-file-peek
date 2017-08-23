@@ -78,7 +78,7 @@
         "postinstall": "node ./node_modules/vscode/bin/install",
         "lint": "eslint src/ --ext .ts",
         "lint:fix": "npm run lint -- --fix",
-        "test": "node ./node_modules/vscode/bin/test",
+        "test": "nyc node ./node_modules/vscode/bin/test",
         "posttest": "nyc report --reporter=json && codecov -f coverage/*.json"
     },
     "devDependencies": {
