@@ -8,7 +8,7 @@ import * as less from 'less'
 import * as HTMLLanguageService from 'vscode-html-languageservice'
 //TODO: Add Sass support
 
-import { SourceMapConsumer } from 'source-map'
+import { Position as SourceMapPosition, RawSourceMap, SourceMapConsumer } from 'source-map'
 
 
 
@@ -20,7 +20,7 @@ import { SourceMapConsumer } from 'source-map'
  */
 interface CompiledCSS {
   css: string;
-  map: SourceMap.RawSourceMap;
+  map: RawSourceMap;
 }
 
 /**
@@ -33,7 +33,7 @@ interface CompiledCSS {
 interface RuleAndMap {
   file: string;
   rule: css.Rule;
-  map: SourceMap.RawSourceMap;
+  map: RawSourceMap;
 }
 
 // this method is called when your extension is activated
@@ -237,8 +237,8 @@ export class PeekCSSDefinitionProvider implements vscode.DefinitionProvider {
     if (ruleAndMap) {
       let position: vscode.Position = null
       if (ruleAndMap.map) {
-        const smc: SourceMap.SourceMapConsumer = new SourceMapConsumer(ruleAndMap.map)
-        const srcPosition: SourceMap.Position = smc.originalPositionFor({ line: ruleAndMap.rule.position.start.line, column: ruleAndMap.rule.position.start.column })
+        const smc: SourceMapConsumer = new SourceMapConsumer(ruleAndMap.map)
+        const srcPosition: SourceMapPosition = smc.originalPositionFor({ line: ruleAndMap.rule.position.start.line, column: ruleAndMap.rule.position.start.column })
         position = new vscode.Position(srcPosition.line - 1 || 0, srcPosition.column)
       } else {
         position = new vscode.Position(ruleAndMap.rule.position.start.line - 1 || 0, ruleAndMap.rule.position.start.column)
