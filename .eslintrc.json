@@ -12,7 +12,7 @@
         "import"
     ],
     "rules": {
-        "semi": ["warn", "never"],
+        "semi": "error",
         "no-unused-vars": "warn",
         "array-bracket-spacing": "warn",
         "arrow-spacing": "warn",
