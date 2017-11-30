@@ -26,10 +26,10 @@ Contributions are greatly appreciated.  Please fork the repository and submit a 
 
 # Changelog
 
-## 1.3.2
+## 1.3.3
 
   * New Logo
-  
+
 ## 1.3.0
 
   * Add configuration option to ignore file from CSS lookup

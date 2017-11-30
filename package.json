@@ -9,7 +9,7 @@
         "definition",
         "css"
     ],
-    "version": "1.3.2",
+    "version": "1.3.3",
     "publisher": "pranaygp",
     "bugs": {
         "url": "https://github.com/pranaygp/vscode-css-peek/issues"
