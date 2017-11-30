@@ -3,6 +3,10 @@
     "displayName": "CSS Peek",
     "description": "Allow peeking to css ID and class strings as definitions from html files to respective CSS. Allows peek and goto definition.",
     "icon": "images/css_peek_icon.png",
+    "galleryBanner": {
+        "color": "#151718",
+        "theme": "dark"
+    },
     "license": "MIT",
     "keywords": [
         "peek",
