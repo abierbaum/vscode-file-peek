@@ -1,28 +1,46 @@
-// A launch configuration that compiles the extension and then opens it inside a new window
 {
-	"version": "0.1.0",
+	"version": "0.2.0",
+	// List of configurations. Add new configurations or edit existing ones.
 	"configurations": [
 		{
-			"name": "Launch Extension",
+			"name": "Launch Client",
 			"type": "extensionHost",
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
-			"args": ["--extensionDevelopmentPath=${workspaceRoot}" ],
+			"args": ["--extensionDevelopmentPath=${workspaceRoot}/client" ],
 			"stopOnEntry": false,
 			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/out/src",
-			"preLaunchTask": "npm"
+			"outFiles": [ "${workspaceRoot}/client/out/client/src/**/*.js" ],
+			"preLaunchTask": "watch:client"
 		},
 		{
 			"name": "Launch Tests",
 			"type": "extensionHost",
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
-			"args": ["${workspaceRoot}/test/test_files/", "--extensionDevelopmentPath=${workspaceRoot}", "--extensionTestsPath=${workspaceRoot}/out/test" ],
+			"args": ["${workspaceRoot}/client/test/test_files/", "--extensionDevelopmentPath=${workspaceRoot}/client", "--extensionTestsPath=${workspaceRoot}/client/out/client/test" ],
 			"stopOnEntry": false,
 			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/out/test",
-			"preLaunchTask": "npm"
-		}
+			"outFiles": [ "${workspaceRoot}/client/out/client/test/**/*.js" ],
+			"preLaunchTask": "compile"
+		},
+		{
+			"name": "Attach to Server 11",
+			"type": "node",
+			"request": "attach",
+			"port": 6011,
+			"sourceMaps": true,
+			"outFiles": [ "${workspaceRoot}/client/server/**/*.js" ],
+			"preLaunchTask": "watch:server"
+		},
+		{
+			"name": "Attach to Server 12",
+			"type": "node",
+			"request": "attach",
+			"port": 6012,
+			"sourceMaps": true,
+			"outFiles": [ "${workspaceRoot}/client/server/**/*.js" ],
+			"preLaunchTask": "watch:server"
+		}		
 	]
 }

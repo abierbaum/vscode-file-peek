@@ -9,3 +9,7 @@ h1 {
 .container #test-2 {
   background-color: #f00; 
 }
+
+h1.test {
+  color: #fff;
+}

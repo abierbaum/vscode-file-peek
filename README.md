@@ -6,9 +6,9 @@
 
 This extension extends HTML and ejs code editing with `Go To Definition` support for css (classes and IDs) found in strings within the source code.
 
-This was heavliy based off a [file peeker extension](https://github.com/abierbaum/vscode-file-peek) built for VSCode and was heavily inspired by a similar feature in [Brackets](http://brackets.io/).
+This was heavily inspired by a similar feature in [Brackets](http://brackets.io/) called CSS Inline Editors.
 
-![working](images/working.gif)
+![working](working.gif)
 
 The extension supports all the normal capabilities of symbol definition tracking, but does it for css selectors (classes and IDs). This includes:
 
@@ -25,6 +25,10 @@ See editor docs for more details
 Contributions are greatly appreciated.  Please fork the repository and submit a pull request.
 
 # Changelog
+
+# 2.0.0
+
+  * A complete rewrite featuring the new [Language Server Protocol](https://github.com/Microsoft/language-server-protocol)
 
 ## 1.3.3
 

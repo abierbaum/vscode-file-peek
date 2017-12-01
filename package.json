@@ -1,113 +1,26 @@
 {
-    "name": "vscode-css-peek",
-    "displayName": "CSS Peek",
-    "description": "Allow peeking to css ID and class strings as definitions from html files to respective CSS. Allows peek and goto definition.",
-    "icon": "images/css_peek_icon.png",
-    "galleryBanner": {
-        "color": "#151718",
-        "theme": "dark"
-    },
-    "license": "MIT",
-    "keywords": [
-        "peek",
-        "definition",
-        "css"
-    ],
-    "version": "1.3.3",
-    "publisher": "pranaygp",
-    "bugs": {
-        "url": "https://github.com/pranaygp/vscode-css-peek/issues"
-    },
-    "homepage": "https://github.com/pranaygp/vscode-css-peek/blob/master/README.md",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/pranaygp/vscode-css-peek.git"
-    },
-    "engines": {
-        "vscode": "^1.1.4"
-    },
-    "categories": [
-        "Other"
-    ],
-    "activationEvents": [
-        "*"
-    ],
-    "main": "./out/src/extension",
-    "contributes": {
-        "commands": [],
-        "configuration": {
-            "type": "object",
-            "title": "CSS Peek extension configuration",
-            "properties": {
-                "css_peek.activeLanguages": {
-                    "type": "array",
-                    "default": [
-                        "html",
-                        "ejs"
-                    ],
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "A list of vscode language names where the extension should be used."
-                },
-                "css_peek.searchFileExtensions": {
-                    "type": "array",
-                    "default": [
-                        ".css",
-                        ".scss",
-                        ".less"
-                    ],
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "A list of extensions that should be tried for finding peeked files."
-                },
-                "css_peek.exclude": {
-                    "type": "array",
-                    "default": [
-                        "node_modules",
-                        "bower_components"
-                    ],
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Files are ignored from the CSS lookup if they match any of these Regular Expressions (regex)."
-                }
-            }
-        }
-    },
-    "scripts": {
-        "vscode:prepublish": "tsc -p ./",
-        "compile": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "lint": "eslint src/ --ext .ts",
-        "lint:fix": "npm run lint -- --fix",
-        "test": "nyc node ./node_modules/vscode/bin/test",
-        "posttest": "nyc report --reporter=json && codecov -f coverage/*.json"
-    },
-    "devDependencies": {
-        "@types/mocha": "^2.2.32",
-        "@types/node": "^6.0.40",
-        "codecov": "^1.0.1",
-        "eslint": "^3.11.1",
-        "eslint-plugin-import": "^2.2.0",
-        "mocha": "^2.3.3",
-        "nyc": "^10.0.0",
-        "typescript": "^2.0.3",
-        "typescript-eslint-parser": "^7.0.0",
-        "vscode": "^1.1.5"
-    },
-    "dependencies": {
-        "@types/async": "^2.0.42",
-        "@types/css": "^0.0.30",
-        "@types/less": "^0.0.32",
-        "@types/lodash": "^4.14.74",
-        "@types/source-map": "^0.5.1",
-        "async": "^2.1.4",
-        "css": "^2.2.1",
-        "less": "^2.7.1",
-        "lodash": "^4.17.2",
-        "source-map": "^0.5.6",
-        "vscode-html-languageservice": "^1.0.0"
-    }
+	"name": "vscode-css-peek",
+	"description": "Allow peeking to css ID and class strings as definitions from html files to respective CSS. Allows peek and goto definition.",
+	"author": "Pranay Prakash <pranay.gp@gmail.com>",
+	"license": "MIT",
+	"version": "0.0.1",
+	"publisher": "vscode",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Microsoft/vscode-extension-samples"
+	},
+	"scripts": {
+		"postinstall": "cd server && npm install && cd ../client && npm install && cd ..",
+		"compile": "tsc -p client/tsconfig.json && cd server && npm run installServer && cd .. && tsc -p server/tsconfig.json",
+		"compile:client": "tsc -p client/tsconfig.json",
+		"watch:client": "tsc -w -p client/tsconfig.json",
+		"compile:server": "cd server && npm run installServer && cd .. && tsc -p server/tsconfig.json",
+		"watch:server": "cd server && npm run installServer && cd .. && tsc -w -p server/tsconfig.json",
+		"test": "cd client && npm run test"
+	},
+	"devDependencies": {
+		"@types/mocha": "^2.2.42",
+		"@types/node": "^6.0.88",
+		"typescript": "^2.5.2"
+	}
 }

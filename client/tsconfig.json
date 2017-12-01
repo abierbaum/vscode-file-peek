@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitAny": true,
+		"noImplicitReturns": true,		
+		"module": "commonjs",
+		"target": "es6",
+		"outDir": "out",
+		"lib": [ "es6"],
+		"sourceMap": true
+	},
+	"exclude": [
+		"node_modules",
+		"server"
+	],
+	"include": [
+		"./**/*",
+		"./../server/src/core/findSelector.ts",
+		"./../server/src/logger/index.ts",
+		"./../server/src/types.d.ts"
+	]
+}
