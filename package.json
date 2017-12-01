@@ -16,7 +16,8 @@
 		"watch:client": "tsc -w -p client/tsconfig.json",
 		"compile:server": "cd server && npm run installServer && cd .. && tsc -p server/tsconfig.json",
 		"watch:server": "cd server && npm run installServer && cd .. && tsc -w -p server/tsconfig.json",
-		"test": "cd client && npm run test"
+		"test": "cd client && npm run test",
+		"lint": "cd client && npm run lint",
 	},
 	"devDependencies": {
 		"@types/mocha": "^2.2.42",
