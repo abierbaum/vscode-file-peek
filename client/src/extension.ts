@@ -61,7 +61,11 @@ export function activate(context: ExtensionContext) {
 	let outputChannel: OutputChannel = Window.createOutputChannel('css-peek');
 	
 	function didOpenTextDocument(document: TextDocument): void {
-		if (document.languageId !== 'html' || (document.uri.scheme !== 'file' && document.uri.scheme !== 'untitled')) {
+		if (document.uri.scheme !== 'file' && document.uri.scheme !== 'untitled') {
+			return;
+		}
+
+		if(activeLanguages.indexOf(document.languageId) === -1){
 			return;
 		}
 

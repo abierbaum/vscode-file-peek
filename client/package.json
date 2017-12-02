@@ -23,9 +23,7 @@
 		"url": "https://github.com/pranaygp/vscode-css-peek.git"
 	},
 	"activationEvents": [
-		"onLanguage:html",
-		"onLanguage:erb",
-		"onLanguage:ejs"
+		"*"
 	],
 	"main": "./out/client/src/extension",
 	"contributes": {
@@ -43,7 +41,9 @@
 					"type": "array",
 					"default": [
 						"html",
-						"ejs"
+						"ejs",
+						"erb",
+						"php"
 					],
 					"items": {
 						"type": "string"
