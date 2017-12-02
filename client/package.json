@@ -9,7 +9,7 @@
 		"definition",
 		"css"
 	],
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"publisher": "pranaygp",
 	"engines": {
 		"vscode": "^1.15.0"
@@ -88,7 +88,7 @@
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "tsc -p ./",
+		"vscode:prepublish": "cp ../README.md . && tsc -p ./",
 		"compile": "tsc -p ./",
 		"watch": "tsc -w -p ./",
 		"update-vscode": "node ./node_modules/vscode/bin/install",
