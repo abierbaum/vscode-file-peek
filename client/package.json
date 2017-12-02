@@ -103,6 +103,7 @@
 		"vscode-languageclient": "^3.4.2"
 	},
 	"devDependencies": {
+		"codecov": "^3.0.0",
 		"eslint": "^4.12.1",
 		"eslint-plugin-import": "^2.8.0",
 		"mocha": "^4.0.1",
