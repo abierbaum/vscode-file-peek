@@ -95,7 +95,7 @@
 		"postinstall": "node ./node_modules/vscode/bin/install",
 		"lint": "eslint src/ --ext .ts",
 		"lint:fix": "npm run lint -- --fix",
-		"test": "nyc node ./node_modules/vscode/bin/test",
+		"test": "env CODE_TESTS_PATH=\"$(pwd)/out/client/test\" CODE_TESTS_WORKSPACE=\"$(pwd)/test/test_files\" nyc node ./node_modules/vscode/bin/test",
 		"posttest": "nyc report --reporter=json && codecov -f coverage/*.json"
 	},
 	"dependencies": {
