@@ -26,9 +26,12 @@ Contributions are greatly appreciated.  Please fork the repository and submit a 
 
 # Changelog
 
-# 2.0.0
+## 2.0.0
 
   * A complete rewrite featuring the new [Language Server Protocol](https://github.com/Microsoft/language-server-protocol)
+  * Added scss support
+  * Added multi definition support (provides all CSS rules matching the selector)
+  * Added support for HTML tag selectors
 
 ## 1.3.3
 
