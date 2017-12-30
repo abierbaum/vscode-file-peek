@@ -27,9 +27,14 @@ Contributions are greatly appreciated.  Please fork the repository and submit a 
 
 # Changelog
 
+## 2.0.3
+
+  * Fix bug #14 that caused CSS Peek to fail after any HTML comments
+
 ## 2.0.2
 
   * Fix bug that limited the language support only to HTML. Now supports all languages provided by "activeLanguages" config
+
 ## 2.0.1
 
   * Fix an error wherby the Overview was missing on the Visual Studio Marketplace
