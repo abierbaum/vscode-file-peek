@@ -25,17 +25,18 @@ function findSelector(document, position) {
     let selector = null;
     const htmlScanner = vscode_html_languageservice_1.getLanguageService().createScanner(text);
     let attribute = null;
-    while (htmlScanner.scan() && htmlScanner.getTokenOffset() <= offset && vscode_html_languageservice_1.TokenType[htmlScanner.getTokenType()] !== 'EOS') {
-        switch (vscode_html_languageservice_1.TokenType[htmlScanner.getTokenType()]) {
-            case 'StartTag':
+    let tokenType = htmlScanner.scan();
+    while (tokenType !== vscode_html_languageservice_1.TokenType.EOS) {
+        switch (tokenType) {
+            case vscode_html_languageservice_1.TokenType.StartTag:
                 attribute = null;
                 if (selectorWord === htmlScanner.getTokenText())
                     selector = { attribute: null, value: selectorWord };
                 break;
-            case 'AttributeName':
+            case vscode_html_languageservice_1.TokenType.AttributeName:
                 attribute = htmlScanner.getTokenText().toLowerCase();
                 break;
-            case 'AttributeValue':
+            case vscode_html_languageservice_1.TokenType.AttributeValue:
                 if (attribute === 'class' || attribute === 'id') {
                     if (htmlScanner.getTokenText().slice(1, -1).split(' ').indexOf(selectorWord) > -1) {
                         selector = { attribute, value: selectorWord };
@@ -43,6 +44,7 @@ function findSelector(document, position) {
                 }
                 break;
         }
+        tokenType = htmlScanner.scan();
     }
     if (selector) {
         logger_1.console.log("Found CSS selector of type " + selector.attribute + " and value " + selector.value);

@@ -41,6 +41,7 @@ describe("Extension Tests", () => {
 	describe("findSelector", () => {
 		const classTestPos: vscode.Position = new vscode.Position(4, 19);
 		const idTestIDPos: vscode.Position = new vscode.Position(4, 38);
+		const classTest2Pos: vscode.Position = new vscode.Position(7, 19);
 		// const idCommonPos: vscode.Position = new vscode.Position(4, 43);
 
 		// const invalidPos: vscode.Position = new vscode.Position(1000, 19);
@@ -60,6 +61,14 @@ describe("Extension Tests", () => {
 			assert.equal(selector.attribute, "class");
 			assert.equal(selector.value, "test");
 		})
+
+		it("can find the right class selector after an HTML comment", () => {
+			assert.ok(document);
+			const selector: { attribute: String; value: String; } = findSelector(document2, classTest2Pos);
+			assert.equal(selector.attribute, "id");
+			assert.equal(selector.value, "test-2");
+		})
+
 
 		//TODO: Add test case for HTML tags
 

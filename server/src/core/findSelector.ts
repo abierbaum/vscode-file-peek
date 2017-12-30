@@ -33,17 +33,19 @@ export default function findSelector(document: TextDocument, position: Position)
   let selector = null;
   const htmlScanner: Scanner = getHTMLLanguageService().createScanner(text);
   let attribute: string = null;
-  while (htmlScanner.scan() && htmlScanner.getTokenOffset() <= offset && TokenType[htmlScanner.getTokenType()] !== 'EOS') {
-    switch (TokenType[htmlScanner.getTokenType()]) {
-      case 'StartTag':
+
+  let tokenType = htmlScanner.scan();
+  while (tokenType !== TokenType.EOS) {
+    switch (tokenType) {
+      case TokenType.StartTag:
         attribute = null;
         if (selectorWord === htmlScanner.getTokenText())
           selector = {attribute: null, value: selectorWord};
         break;
-      case 'AttributeName':
+      case TokenType.AttributeName:
         attribute = htmlScanner.getTokenText().toLowerCase();
         break;
-      case 'AttributeValue':
+      case TokenType.AttributeValue:
         if (attribute === 'class' || attribute === 'id') {
           if (htmlScanner.getTokenText().slice(1, -1).split(' ').indexOf(selectorWord) > -1){
             selector = { attribute, value: selectorWord}
@@ -51,6 +53,7 @@ export default function findSelector(document: TextDocument, position: Position)
         }
         break;
     }
+    tokenType = htmlScanner.scan();
   }
 
   if(selector){

@@ -1603,8 +1603,8 @@ vscode-css-languageservice@^3.0.1:
     vscode-nls "^2.0.1"
 
 vscode-html-languageservice@^2.0.11:
-  version "2.0.11"
-  resolved "https://registry.yarnpkg.com/vscode-html-languageservice/-/vscode-html-languageservice-2.0.11.tgz#84da1ba56a1334d56b1b3ed4a8d51874c1f5436d"
+  version "2.0.14"
+  resolved "https://registry.yarnpkg.com/vscode-html-languageservice/-/vscode-html-languageservice-2.0.14.tgz#15491c11bb7e196f6fd03b6c6c768901935862eb"
   dependencies:
     vscode-languageserver-types "3.5.0"
     vscode-nls "^2.0.2"
