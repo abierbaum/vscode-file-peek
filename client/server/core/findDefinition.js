@@ -26,9 +26,9 @@ function getSelection(selector) {
             return selector.value;
     }
 }
-function findDefinition(selector, stylesheetMap) {
-    logger_1.console.log('Searching for definition');
-    const locations = [];
+function findSymbols(selector, stylesheetMap) {
+    logger_1.console.log('Searching for symbol');
+    const foundSymbols = [];
     let selection = getSelection(selector);
     const classOrIdSelector = selector.attribute === 'class' || selector.attribute === 'id';
     if (selection[0] === ".") {
@@ -49,17 +49,21 @@ function findDefinition(selector, stylesheetMap) {
                 // TODO: Handle nesting
             }
             if (symbol.name.search(re) !== -1) {
-                locations.push(symbol.location);
+                foundSymbols.push(symbol);
             }
             else if (!classOrIdSelector) {
                 // Special case for tag selectors - match "*" as the rightmost character
                 if (/\*\s*$/.test(symbol.name)) {
-                    locations.push(symbol.location);
+                    foundSymbols.push(symbol);
                 }
             }
         });
     });
-    return locations;
+    return foundSymbols;
+}
+exports.findSymbols = findSymbols;
+function findDefinition(selector, stylesheetMap) {
+    return findSymbols(selector, stylesheetMap).map(({ location }) => location);
 }
 exports.findDefinition = findDefinition;
 //# sourceMappingURL=findDefinition.js.map

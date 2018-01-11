@@ -1,6 +1,3 @@
-/*---------------------------------------------------------
- * Copyright (C) Microsoft Corporation. All rights reserved.
- *--------------------------------------------------------*/
 'use strict';
 
 import fs = require('fs');
@@ -10,7 +7,7 @@ import {
 import { Uri, StylesheetMap, Selector } from './types'
 
 import findSelector from './core/findSelector'
-import { findDefinition, getLanguageService } from './core/findDefinition'
+import { findSymbols, findDefinition, getLanguageService } from './core/findDefinition'
 import { create } from './logger'
 
 // Creates the LSP connection
@@ -79,7 +76,8 @@ connection.onInitialize((params) => {
 				openClose: true,
 				change: TextDocumentSyncKind.Full
 			},
-			definitionProvider: true
+      definitionProvider: true,
+      workspaceSymbolProvider: true
 		}
 	}
 });
@@ -117,6 +115,22 @@ connection.onDefinition((textDocumentPositon: TextDocumentPositionParams): Defin
   }
 
   return findDefinition(selector, styleSheets);
+})
+
+connection.onWorkspaceSymbol(({query}) => {
+  const selectors: Selector[] = [
+    {
+      attribute: 'class',
+      value: query
+    },
+    {
+      attribute: 'id',
+      value: query
+    },
+  ];
+
+  return selectors
+    .reduce((p, selector) => [...p, ...findSymbols(selector, styleSheets)], []);  
 })
 
 connection.listen();

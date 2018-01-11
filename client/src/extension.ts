@@ -65,10 +65,6 @@ export function activate(context: ExtensionContext) {
 			return;
 		}
 
-		if(activeLanguages.indexOf(document.languageId) === -1){
-			return;
-		}
-
 		let uri = document.uri;
 		// Untitled files go to a default client.
 		if (uri.scheme === 'untitled' && !defaultClient) {

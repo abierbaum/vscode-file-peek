@@ -1,6 +1,3 @@
-/*---------------------------------------------------------
- * Copyright (C) Microsoft Corporation. All rights reserved.
- *--------------------------------------------------------*/
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
@@ -65,7 +62,8 @@ connection.onInitialize((params) => {
                 openClose: true,
                 change: vscode_languageserver_1.TextDocumentSyncKind.Full
             },
-            definitionProvider: true
+            definitionProvider: true,
+            workspaceSymbolProvider: true
         }
     };
 });
@@ -96,6 +94,20 @@ connection.onDefinition((textDocumentPositon) => {
         return null;
     }
     return findDefinition_1.findDefinition(selector, styleSheets);
+});
+connection.onWorkspaceSymbol(({ query }) => {
+    const selectors = [
+        {
+            attribute: 'class',
+            value: query
+        },
+        {
+            attribute: 'id',
+            value: query
+        },
+    ];
+    return selectors
+        .reduce((p, selector) => [...p, ...findDefinition_1.findSymbols(selector, styleSheets)], []);
 });
 connection.listen();
 //# sourceMappingURL=server.js.map

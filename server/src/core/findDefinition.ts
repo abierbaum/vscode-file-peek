@@ -30,9 +30,9 @@ function getSelection(selector: Selector): string {
   }
 }
 
-export function findDefinition(selector: Selector, stylesheetMap: StylesheetMap): Location[] {
-  console.log('Searching for definition')
-  const locations: Location[] = [];
+export function findSymbols(selector: Selector, stylesheetMap: StylesheetMap): SymbolInformation[] {
+  console.log('Searching for symbol')
+  const foundSymbols: SymbolInformation[] = [];
   
   let selection = getSelection(selector);
   const classOrIdSelector = selector.attribute === 'class' || selector.attribute === 'id';
@@ -60,15 +60,19 @@ export function findDefinition(selector: Selector, stylesheetMap: StylesheetMap)
         }
 
         if(symbol.name.search(re) !== -1) {
-          locations.push(symbol.location)
+          foundSymbols.push(symbol)
         } else if (!classOrIdSelector) {
           // Special case for tag selectors - match "*" as the rightmost character
           if (/\*\s*$/.test(symbol.name)) {
-            locations.push(symbol.location);
+            foundSymbols.push(symbol);
           }
         }
       })
     })
 
-  return locations
+  return foundSymbols;
+}
+
+export function findDefinition(selector: Selector, stylesheetMap: StylesheetMap): Location[] {
+  return findSymbols(selector, stylesheetMap).map(({location}) => location);
 }
