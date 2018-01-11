@@ -5,27 +5,37 @@
 
 # Functionality
 
-This extension extends HTML and ejs code editing with `Go To Definition` support for css (classes and IDs) found in strings within the source code.
+This extension extends HTML and ejs code editing with `Go To Definition` and `Go To Symbol in Workspace` support for css/scss/less (classes and IDs) found in strings within the source code.
 
 This was heavily inspired by a similar feature in [Brackets](http://brackets.io/) called CSS Inline Editors.
 
 ![working](working.gif)
 
-The extension supports all the normal capabilities of symbol definition tracking, but does it for css selectors (classes and IDs). This includes:
+The extension supports all the normal capabilities of symbol definition tracking, but does it for css selectors (classes, IDs and HTML tags). This includes:
 
  * Peek: load the css file inline and make quick edits right there. (`Ctrl+Shift+F12`)
  * Go To: jump directly to the css file or open it in a new editor (`F12`)
  * Hover: show the definition in a hover over the symbol (`Ctrl+hover`)
 
+In addition, it supports the Symbol Provider so you can quickly jump to the right CSS/SCSS/LESS code if you already know the class or ID name
+
+![Symbol Provider](symbolProvider.gif)
+
 See editor docs for more details
  * [Visual Studio Code: Goto Definition](https://code.visualstudio.com/docs/editor/editingevolved#_go-to-definition)
  * [Visual Studio Code: Peek](https://code.visualstudio.com/docs/editor/editingevolved#_peek)
+ * [Visual Studio Code: Open Symbol By Name](https://code.visualstudio.com/Docs/editor/editingevolved#_open-symbol-by-name)
 
 # Contributing
 
 Contributions are greatly appreciated.  Please fork the repository and submit a pull request.
 
 # Changelog
+
+## 2.1.0
+
+  * Add support for Symbol Provider (#18)
+  > ![Symbol Provider](symbolProvider.gif)
 
 ## 2.0.3
 
