@@ -42,22 +42,27 @@ function findSymbols(selector, stylesheetMap) {
     Object.keys(stylesheetMap)
         .forEach(uri => {
         const { document, stylesheet } = stylesheetMap[uri];
-        const symbols = getLanguageService(document).findDocumentSymbols(document, stylesheet);
-        logger_1.console.log('Found ' + symbols.length + ' symbols in ' + uri);
-        symbols.forEach((symbol) => {
-            if (symbol.name.indexOf("&") !== -1) {
-                // TODO: Handle nesting
-            }
-            if (symbol.name.search(re) !== -1) {
-                foundSymbols.push(symbol);
-            }
-            else if (!classOrIdSelector) {
-                // Special case for tag selectors - match "*" as the rightmost character
-                if (/\*\s*$/.test(symbol.name)) {
+        try {
+            const symbols = getLanguageService(document).findDocumentSymbols(document, stylesheet);
+            logger_1.console.log('Found ' + symbols.length + ' symbols in ' + uri);
+            symbols.forEach((symbol) => {
+                if (symbol.name.indexOf("&") !== -1) {
+                    // TODO: Handle nesting
+                }
+                if (symbol.name.search(re) !== -1) {
                     foundSymbols.push(symbol);
                 }
-            }
-        });
+                else if (!classOrIdSelector) {
+                    // Special case for tag selectors - match "*" as the rightmost character
+                    if (/\*\s*$/.test(symbol.name)) {
+                        foundSymbols.push(symbol);
+                    }
+                }
+            });
+        }
+        catch (e) {
+            logger_1.console.log(e.stack);
+        }
     });
     return foundSymbols;
 }

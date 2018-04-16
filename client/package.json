@@ -9,7 +9,7 @@
         "definition",
         "css"
     ],
-    "version": "2.1.0",
+    "version": "2.1.1",
     "publisher": "pranaygp",
     "engines": {
         "vscode": "^1.15.0"

@@ -32,6 +32,10 @@ Contributions are greatly appreciated.  Please fork the repository and submit a 
 
 # Changelog
 
+## 2.1.1
+
+  * (Temporarily) fix bug #19 by handling errors from `findDocumentSymbols`
+
 ## 2.1.0
 
   * Add support for Symbol Provider (#18)
