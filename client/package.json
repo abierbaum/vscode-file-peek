@@ -43,7 +43,11 @@
                         "html",
                         "ejs",
                         "erb",
-                        "php"
+                        "php",
+                        "javascriptreact",
+                        "typescriptreact",
+                        "typescript",
+                        "javascript"
                     ],
                     "items": {
                         "type": "string"

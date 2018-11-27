@@ -44,6 +44,12 @@ export default function findSelector(document: TextDocument, position: Position)
         break;
       case TokenType.AttributeName:
         attribute = htmlScanner.getTokenText().toLowerCase();
+
+        // Convert the attribute to a standard class attribute
+        if (attribute === 'classname') {
+          attribute = 'class';
+        }
+
         break;
       case TokenType.AttributeValue:
         if (attribute === 'class' || attribute === 'id') {
