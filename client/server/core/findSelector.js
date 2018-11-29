@@ -35,6 +35,10 @@ function findSelector(document, position) {
                 break;
             case vscode_html_languageservice_1.TokenType.AttributeName:
                 attribute = htmlScanner.getTokenText().toLowerCase();
+                // Convert the attribute to a standard class attribute
+                if (attribute === 'classname') {
+                    attribute = 'class';
+                }
                 break;
             case vscode_html_languageservice_1.TokenType.AttributeValue:
                 if (attribute === 'class' || attribute === 'id') {

@@ -32,18 +32,22 @@ Contributions are greatly appreciated.  Please fork the repository and submit a 
 
 # Changelog
 
+## 2.2.0
+
+  * Initial JSX support via [#49](https://github.com/pranaygp/vscode-css-peek/pull/49) ❤ [@ReiMcCl](https://github.com/ReiMcCl)
+
 ## 2.1.1
 
-  * (Temporarily) fix bug #19 by handling errors from `findDocumentSymbols`
+  * (Temporarily) fix bug [#19](https://github.com/pranaygp/vscode-css-peek/issues/18) by handling errors from `findDocumentSymbols`
 
 ## 2.1.0
 
-  * Add support for Symbol Provider (#18)
+  * Add support for Symbol Provider [#18](https://github.com/pranaygp/vscode-css-peek/issues/18)
   > ![Symbol Provider](symbolProvider.gif)
 
 ## 2.0.3
 
-  * Fix bug #14 that caused CSS Peek to fail after any HTML comments
+  * Fix bug [#14](https://github.com/pranaygp/vscode-css-peek/issues/14) that caused CSS Peek to fail after any HTML comments
 
 ## 2.0.2
 
