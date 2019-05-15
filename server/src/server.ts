@@ -7,7 +7,7 @@ import {
 import { Uri, StylesheetMap, Selector } from './types'
 
 import findSelector from './core/findSelector'
-import { findSymbols, findDefinition, getLanguageService } from './core/findDefinition'
+import { findSymbols, findDefinition, getLanguageService, isLanguageServiceSupported } from './core/findDefinition'
 import { create } from './logger'
 
 // Creates the LSP connection
@@ -25,12 +25,9 @@ let workspaceFolder: string;
 // A list of languages that suport the lookup definition (by default, only html)
 let activeLanguages: string[];
 
-// A list of file extensions to lookup for style definitions (defaults to .css, .scss and .less)
-let fileSearchExtensions: string[]
-
 documents.onDidOpen((event) => {
   connection.console.log(`[Server(${process.pid}) ${workspaceFolder}] Document opened: ${event.document.uri}`);
-  if (fileSearchExtensions.indexOf('.' + event.document.languageId) > -1) {
+  if (isLanguageServiceSupported(event.document.languageId)) {
     const uri = event.document.uri;
     const languageId = event.document.languageId;
     const text = event.document.getText();
@@ -47,7 +44,7 @@ documents.listen(connection);
 
 documents.onDidChangeContent((event) => {
   connection.console.log(`[Server(${process.pid}) ${workspaceFolder}] Document changed: ${event.document.uri}`);
-  if (fileSearchExtensions.indexOf('.' + event.document.languageId) > -1) {
+  if (isLanguageServiceSupported(event.document.languageId)) {
     const uri = event.document.uri;
     const languageId = event.document.languageId;
     const text = event.document.getText();
@@ -65,7 +62,6 @@ connection.onInitialize((params) => {
   create(connection.console);
   workspaceFolder = params.rootUri;
   activeLanguages = params.initializationOptions.activeLanguages;
-  fileSearchExtensions = params.initializationOptions.fileSearchExtensions;
 	connection.console.log(`[Server(${process.pid}) ${workspaceFolder}] Started and initialize received`);
   setupStyleMap(params);
 	connection.console.log(`[Server(${process.pid}) ${workspaceFolder}] Setup a stylesheet lookup map`);

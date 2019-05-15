@@ -51,8 +51,8 @@ export function activate(context: ExtensionContext) {
 	const activeLanguages: Array<string> =
 		(config.get('activeLanguages') as Array<string>);
 
-	const fileSearchExtensions: Array<string> =
-		(config.get('searchFileExtensions') as Array<string>);
+	const include: Array<string> =
+		(config.get('include') as Array<string>);
 
 	const exclude: Array<string> = 
 		(config.get('exclude') as Array<string>);
@@ -75,9 +75,7 @@ export function activate(context: ExtensionContext) {
 			};
 			let clientOptions: LanguageClientOptions = {
 				documentSelector:
-					fileSearchExtensions
-						.map(l => l.slice(1))
-						.concat(activeLanguages)
+					activeLanguages
 						.map(language => ({
 							scheme: 'untitled',
 							language
@@ -87,8 +85,7 @@ export function activate(context: ExtensionContext) {
 				},
 				initializationOptions: {
 					stylesheets: [],
-					activeLanguages,
-					fileSearchExtensions
+					activeLanguages
 				},
 				diagnosticCollectionName: 'css-peek',
 				outputChannel
@@ -108,48 +105,39 @@ export function activate(context: ExtensionContext) {
 		folder = getOuterMostWorkspaceFolder(folder);
 		
 		if (!clients.has(folder.uri.toString())) {
-			Promise.all(fileSearchExtensions.map(type => Workspace.findFiles(`**/*${type}`, '')))
+			Workspace.findFiles(`{${(include || []).join(',')}}`, `{${(exclude || []).join(',')}}`,)
 				.then(file_searches => {
-					let potentialFiles: Uri[] = Array.prototype.concat(...file_searches)
-						.filter((uri: Uri) => uri.scheme === 'file');
-					exclude
-						.map(expression => new RegExp(expression, 'gi'))
-						.forEach(regex => {
-							potentialFiles = potentialFiles.filter(file => !regex.test(file.fsPath));
-						});
-						let debugOptions = { execArgv: ["--nolazy", `--inspect=${6011 + clients.size}`] };
-						let serverOptions = {
-							run: { module, transport: TransportKind.ipc },
-							debug: { module, transport: TransportKind.ipc, options: debugOptions}
-						};
-						let clientOptions: LanguageClientOptions = {
-							documentSelector:
-							fileSearchExtensions
-								.map(l => l.slice(1))
-								.concat(activeLanguages)
-								.map(language => ({
-									scheme: 'file',
-									language: language,
-									pattern: `${folder.uri.fsPath}/**/*`
-								})),
-							diagnosticCollectionName: 'css-peek',
-							synchronize: {
-								configurationSection: 'css_peek'
-							},
-							initializationOptions: {
-								stylesheets: potentialFiles.map(u => ({uri: u.toString(), fsPath: u.fsPath})),
-								activeLanguages,
-								fileSearchExtensions
-							},
-							workspaceFolder: folder,
-							outputChannel
-						}
-						let client = new LanguageClient('css-peek', 'CSS Peek', serverOptions, clientOptions);
-						client.registerProposedFeatures();
-						client.start();
-						clients.set(folder.uri.toString(), client);
-				})
-	
+					let potentialFiles: Uri[] = file_searches.filter((uri: Uri) => uri.scheme === 'file');
+
+					let debugOptions = { execArgv: ["--nolazy", `--inspect=${6011 + clients.size}`] };
+					let serverOptions = {
+						run: { module, transport: TransportKind.ipc },
+						debug: { module, transport: TransportKind.ipc, options: debugOptions}
+					};
+					let clientOptions: LanguageClientOptions = {
+						documentSelector:
+							activeLanguages
+							.map(language => ({
+								scheme: 'file',
+								language: language,
+								pattern: `${folder.uri.fsPath}/**/*`
+							})),
+						diagnosticCollectionName: 'css-peek',
+						synchronize: {
+							configurationSection: 'css_peek'
+						},
+						initializationOptions: {
+							stylesheets: potentialFiles.map(u => ({uri: u.toString(), fsPath: u.fsPath})),
+							activeLanguages
+						},
+						workspaceFolder: folder,
+						outputChannel
+					}
+					let client = new LanguageClient('css-peek', 'CSS Peek', serverOptions, clientOptions);
+					client.registerProposedFeatures();
+					client.start();
+					clients.set(folder.uri.toString(), client);
+			});
 		}
 	}
 

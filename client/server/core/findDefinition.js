@@ -7,6 +7,10 @@ let languageServices = {
     scss: vscode_css_languageservice_1.getSCSSLanguageService(),
     less: vscode_css_languageservice_1.getLESSLanguageService()
 };
+function isLanguageServiceSupported(serviceId) {
+    return !!languageServices[serviceId];
+}
+exports.isLanguageServiceSupported = isLanguageServiceSupported;
 function getLanguageService(document) {
     let service = languageServices[document.languageId];
     if (!service) {

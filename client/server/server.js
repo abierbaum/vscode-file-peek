@@ -15,11 +15,9 @@ let styleSheets = {};
 let workspaceFolder;
 // A list of languages that suport the lookup definition (by default, only html)
 let activeLanguages;
-// A list of file extensions to lookup for style definitions (defaults to .css, .scss and .less)
-let fileSearchExtensions;
 documents.onDidOpen((event) => {
     connection.console.log(`[Server(${process.pid}) ${workspaceFolder}] Document opened: ${event.document.uri}`);
-    if (fileSearchExtensions.indexOf('.' + event.document.languageId) > -1) {
+    if (findDefinition_1.isLanguageServiceSupported(event.document.languageId)) {
         const uri = event.document.uri;
         const languageId = event.document.languageId;
         const text = event.document.getText();
@@ -35,7 +33,7 @@ documents.onDidOpen((event) => {
 documents.listen(connection);
 documents.onDidChangeContent((event) => {
     connection.console.log(`[Server(${process.pid}) ${workspaceFolder}] Document changed: ${event.document.uri}`);
-    if (fileSearchExtensions.indexOf('.' + event.document.languageId) > -1) {
+    if (findDefinition_1.isLanguageServiceSupported(event.document.languageId)) {
         const uri = event.document.uri;
         const languageId = event.document.languageId;
         const text = event.document.getText();
@@ -52,7 +50,6 @@ connection.onInitialize((params) => {
     logger_1.create(connection.console);
     workspaceFolder = params.rootUri;
     activeLanguages = params.initializationOptions.activeLanguages;
-    fileSearchExtensions = params.initializationOptions.fileSearchExtensions;
     connection.console.log(`[Server(${process.pid}) ${workspaceFolder}] Started and initialize received`);
     setupStyleMap(params);
     connection.console.log(`[Server(${process.pid}) ${workspaceFolder}] Setup a stylesheet lookup map`);

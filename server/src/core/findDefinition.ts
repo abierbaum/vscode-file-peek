@@ -10,6 +10,10 @@ let languageServices: { [id: string]: LanguageService } = {
 	less: getLESSLanguageService()
 };
 
+export function isLanguageServiceSupported(serviceId: string) {
+  return !!languageServices[serviceId];
+}
+
 export function getLanguageService(document: TextDocument) {
 	let service = languageServices[document.languageId];
 	if (!service) {
