@@ -23,7 +23,7 @@ let styleSheets: StylesheetMap = {};
 let workspaceFolder: string;
 
 // A list of languages that suport the lookup definition (by default, only html)
-let activeLanguages: string[];
+let peekFromLanguages: string[];
 
 documents.onDidOpen((event) => {
   connection.console.log(`[Server(${process.pid}) ${workspaceFolder}] Document opened: ${event.document.uri}`);
@@ -61,7 +61,7 @@ documents.onDidChangeContent((event) => {
 connection.onInitialize((params) => {
   create(connection.console);
   workspaceFolder = params.rootUri;
-  activeLanguages = params.initializationOptions.activeLanguages;
+  peekFromLanguages = params.initializationOptions.peekFromLanguages;
 	connection.console.log(`[Server(${process.pid}) ${workspaceFolder}] Started and initialize received`);
   setupStyleMap(params);
 	connection.console.log(`[Server(${process.pid}) ${workspaceFolder}] Setup a stylesheet lookup map`);
@@ -101,7 +101,7 @@ connection.onDefinition((textDocumentPositon: TextDocumentPositionParams): Defin
   const document = documents.get(documentIdentifier.uri);
 
   // Ignore defintiion requests from unsupported languages
-  if(activeLanguages.indexOf(document.languageId) === -1){
+  if(peekFromLanguages.indexOf(document.languageId) === -1){
     return null;
   }
 

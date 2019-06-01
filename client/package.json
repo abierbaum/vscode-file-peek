@@ -37,7 +37,7 @@
                     "default": true,
                     "description": "Controls the enablement."
                 },
-                "css_peek.activeLanguages": {
+                "css_peek.peekFromLanguages": {
                     "type": "array",
                     "default": [
                         "html",
@@ -54,23 +54,11 @@
                     },
                     "description": "A list of vscode language names where the extension should be used."
                 },
-                "css_peek.include": {
+                "css_peek.peekToExclude": {
                     "type": "array",
                     "default": [
-                        "**/*.css",
-                        "**/*.scss",
-                        "**/*.less"
-                    ],
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "A list of file globs to allow peeking into"
-                },
-                "css_peek.exclude": {
-                    "type": "array",
-                    "default": [
-                        "node_modules",
-                        "bower_components"
+                        "**/node_modules",
+                        "**/bower_components"
                     ],
                     "items": {
                         "type": "string"

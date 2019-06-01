@@ -7,6 +7,8 @@ import {
 	LanguageClient, LanguageClientOptions, TransportKind
 } from 'vscode-languageclient';
 
+const supportedStyleLanguages = ['css', 'scss', 'less'];
+
 let defaultClient: LanguageClient;
 let clients: Map<string, LanguageClient> = new Map();
 
@@ -48,14 +50,13 @@ export function activate(context: ExtensionContext) {
 	const config: WorkspaceConfiguration =
 	Workspace.getConfiguration('css_peek');
 
-	const activeLanguages: Array<string> =
-		(config.get('activeLanguages') as Array<string>);
+	const peekFromLanguages: Array<string> =
+		(config.get('peekFromLanguages') as Array<string>);
 
-	const include: Array<string> =
-		(config.get('include') as Array<string>);
+	const peekToInclude = supportedStyleLanguages.map((l) => `**/*.${l}`);
 
-	const exclude: Array<string> = 
-		(config.get('exclude') as Array<string>);
+	const peekToExclude: Array<string> = 
+		(config.get('peekToExclude') as Array<string>);
 
 	let module = context.asAbsolutePath(path.join('server', 'server.js'));
 	let outputChannel: OutputChannel = Window.createOutputChannel('css-peek');
@@ -75,7 +76,7 @@ export function activate(context: ExtensionContext) {
 			};
 			let clientOptions: LanguageClientOptions = {
 				documentSelector:
-					activeLanguages
+					peekFromLanguages
 						.map(language => ({
 							scheme: 'untitled',
 							language
@@ -85,7 +86,7 @@ export function activate(context: ExtensionContext) {
 				},
 				initializationOptions: {
 					stylesheets: [],
-					activeLanguages
+					peekFromLanguages: peekFromLanguages
 				},
 				diagnosticCollectionName: 'css-peek',
 				outputChannel
@@ -105,7 +106,7 @@ export function activate(context: ExtensionContext) {
 		folder = getOuterMostWorkspaceFolder(folder);
 		
 		if (!clients.has(folder.uri.toString())) {
-			Workspace.findFiles(`{${(include || []).join(',')}}`, `{${(exclude || []).join(',')}}`,)
+			Workspace.findFiles(`{${(peekToInclude || []).join(',')}}`, `{${(peekToExclude || []).join(',')}}`,)
 				.then(file_searches => {
 					let potentialFiles: Uri[] = file_searches.filter((uri: Uri) => uri.scheme === 'file');
 
@@ -116,7 +117,7 @@ export function activate(context: ExtensionContext) {
 					};
 					let clientOptions: LanguageClientOptions = {
 						documentSelector:
-							activeLanguages
+							peekFromLanguages
 							.map(language => ({
 								scheme: 'file',
 								language: language,
@@ -128,7 +129,7 @@ export function activate(context: ExtensionContext) {
 						},
 						initializationOptions: {
 							stylesheets: potentialFiles.map(u => ({uri: u.toString(), fsPath: u.fsPath})),
-							activeLanguages
+							peekFromLanguages: peekFromLanguages
 						},
 						workspaceFolder: folder,
 						outputChannel
