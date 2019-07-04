@@ -32,7 +32,7 @@ Contributions are greatly appreciated.  Please fork the repository and submit a 
 
 # Changelog
 
-## 3.0.0
+## 3.0.2
 
   * Use Globs for configuration options instead of RegExp via [#61](https://github.com/pranaygp/vscode-css-peek/pull/61) ❤ [@arch-stack](https://github.com/arch-stack)
 
