@@ -37,7 +37,7 @@
                     "default": true,
                     "description": "Controls the enablement."
                 },
-                "css_peek.activeLanguages": {
+                "css_peek.peekFromLanguages": {
                     "type": "array",
                     "default": [
                         "html",
@@ -54,28 +54,16 @@
                     },
                     "description": "A list of vscode language names where the extension should be used."
                 },
-                "css_peek.searchFileExtensions": {
+                "css_peek.peekToExclude": {
                     "type": "array",
                     "default": [
-                        ".css",
-                        ".scss",
-                        ".less"
+                        "**/node_modules",
+                        "**/bower_components"
                     ],
                     "items": {
                         "type": "string"
                     },
-                    "description": "A list of extensions that should be tried for finding peeked files."
-                },
-                "css_peek.exclude": {
-                    "type": "array",
-                    "default": [
-                        "node_modules",
-                        "bower_components"
-                    ],
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Files are ignored from the CSS lookup if they match any of these Regular Expressions (regex)."
+                    "description": "A list of file globs that filters out peekable files"
                 },
                 "css_peek.trace.server": {
                     "scope": "window",

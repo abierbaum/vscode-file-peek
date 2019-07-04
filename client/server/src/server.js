@@ -17,7 +17,7 @@ let styleSheets = {};
 // The workspace folder this server is operating on
 let workspaceFolder;
 // A list of languages that suport the lookup definition (by default, only html)
-let activeLanguages;
+let peekFromLanguages;
 // A list of file extensions to lookup for style definitions (defaults to .css, .scss and .less)
 let fileSearchExtensions;
 documents.onDidOpen((event) => {
@@ -54,7 +54,7 @@ documents.onDidChangeContent((event) => {
 connection.onInitialize((params) => {
     logger_1.create(connection.console);
     workspaceFolder = params.rootUri;
-    activeLanguages = params.initializationOptions.activeLanguages;
+    peekFromLanguages = params.initializationOptions.peekFromLanguages;
     fileSearchExtensions = params.initializationOptions.fileSearchExtensions;
     connection.console.log(`[Server(${process.pid}) ${workspaceFolder}] Started and initialize received`);
     setupStyleMap(params);
@@ -88,7 +88,7 @@ connection.onDefinition((textDocumentPositon) => {
     const position = textDocumentPositon.position;
     const document = documents.get(documentIdentifier.uri);
     // Ignore defintiion requests from unsupported languages
-    if (activeLanguages.indexOf(document.languageId) === -1) {
+    if (peekFromLanguages.indexOf(document.languageId) === -1) {
         return null;
     }
     const selector = findSelector_1.default(document, position);

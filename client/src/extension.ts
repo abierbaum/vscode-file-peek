@@ -7,6 +7,8 @@ import {
 	LanguageClient, LanguageClientOptions, TransportKind
 } from 'vscode-languageclient';
 
+const supportedStyleLanguages = ['css', 'scss', 'less'];
+
 let defaultClient: LanguageClient;
 let clients: Map<string, LanguageClient> = new Map();
 
@@ -48,14 +50,13 @@ export function activate(context: ExtensionContext) {
 	const config: WorkspaceConfiguration =
 	Workspace.getConfiguration('css_peek');
 
-	const activeLanguages: Array<string> =
-		(config.get('activeLanguages') as Array<string>);
+	const peekFromLanguages: Array<string> =
+		(config.get('peekFromLanguages') as Array<string>);
 
-	const fileSearchExtensions: Array<string> =
-		(config.get('searchFileExtensions') as Array<string>);
+	const peekToInclude = supportedStyleLanguages.map((l) => `**/*.${l}`);
 
-	const exclude: Array<string> = 
-		(config.get('exclude') as Array<string>);
+	const peekToExclude: Array<string> = 
+		(config.get('peekToExclude') as Array<string>);
 
 	let module = context.asAbsolutePath(path.join('server', 'server.js'));
 	let outputChannel: OutputChannel = Window.createOutputChannel('css-peek');
@@ -75,9 +76,7 @@ export function activate(context: ExtensionContext) {
 			};
 			let clientOptions: LanguageClientOptions = {
 				documentSelector:
-					fileSearchExtensions
-						.map(l => l.slice(1))
-						.concat(activeLanguages)
+					peekFromLanguages
 						.map(language => ({
 							scheme: 'untitled',
 							language
@@ -87,8 +86,7 @@ export function activate(context: ExtensionContext) {
 				},
 				initializationOptions: {
 					stylesheets: [],
-					activeLanguages,
-					fileSearchExtensions
+					peekFromLanguages: peekFromLanguages
 				},
 				diagnosticCollectionName: 'css-peek',
 				outputChannel
@@ -108,48 +106,39 @@ export function activate(context: ExtensionContext) {
 		folder = getOuterMostWorkspaceFolder(folder);
 		
 		if (!clients.has(folder.uri.toString())) {
-			Promise.all(fileSearchExtensions.map(type => Workspace.findFiles(`**/*${type}`, '')))
+			Workspace.findFiles(`{${(peekToInclude || []).join(',')}}`, `{${(peekToExclude || []).join(',')}}`,)
 				.then(file_searches => {
-					let potentialFiles: Uri[] = Array.prototype.concat(...file_searches)
-						.filter((uri: Uri) => uri.scheme === 'file');
-					exclude
-						.map(expression => new RegExp(expression, 'gi'))
-						.forEach(regex => {
-							potentialFiles = potentialFiles.filter(file => !regex.test(file.fsPath));
-						});
-						let debugOptions = { execArgv: ["--nolazy", `--inspect=${6011 + clients.size}`] };
-						let serverOptions = {
-							run: { module, transport: TransportKind.ipc },
-							debug: { module, transport: TransportKind.ipc, options: debugOptions}
-						};
-						let clientOptions: LanguageClientOptions = {
-							documentSelector:
-							fileSearchExtensions
-								.map(l => l.slice(1))
-								.concat(activeLanguages)
-								.map(language => ({
-									scheme: 'file',
-									language: language,
-									pattern: `${folder.uri.fsPath}/**/*`
-								})),
-							diagnosticCollectionName: 'css-peek',
-							synchronize: {
-								configurationSection: 'css_peek'
-							},
-							initializationOptions: {
-								stylesheets: potentialFiles.map(u => ({uri: u.toString(), fsPath: u.fsPath})),
-								activeLanguages,
-								fileSearchExtensions
-							},
-							workspaceFolder: folder,
-							outputChannel
-						}
-						let client = new LanguageClient('css-peek', 'CSS Peek', serverOptions, clientOptions);
-						client.registerProposedFeatures();
-						client.start();
-						clients.set(folder.uri.toString(), client);
-				})
-	
+					let potentialFiles: Uri[] = file_searches.filter((uri: Uri) => uri.scheme === 'file');
+
+					let debugOptions = { execArgv: ["--nolazy", `--inspect=${6011 + clients.size}`] };
+					let serverOptions = {
+						run: { module, transport: TransportKind.ipc },
+						debug: { module, transport: TransportKind.ipc, options: debugOptions}
+					};
+					let clientOptions: LanguageClientOptions = {
+						documentSelector:
+							peekFromLanguages
+							.map(language => ({
+								scheme: 'file',
+								language: language,
+								pattern: `${folder.uri.fsPath}/**/*`
+							})),
+						diagnosticCollectionName: 'css-peek',
+						synchronize: {
+							configurationSection: 'css_peek'
+						},
+						initializationOptions: {
+							stylesheets: potentialFiles.map(u => ({uri: u.toString(), fsPath: u.fsPath})),
+							peekFromLanguages: peekFromLanguages
+						},
+						workspaceFolder: folder,
+						outputChannel
+					}
+					let client = new LanguageClient('css-peek', 'CSS Peek', serverOptions, clientOptions);
+					client.registerProposedFeatures();
+					client.start();
+					clients.set(folder.uri.toString(), client);
+			});
 		}
 	}
 
