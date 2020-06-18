@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/pranaygp/vscode-css-peek.svg?branch=master)](https://travis-ci.org/pranaygp/vscode-css-peek)
 [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/pranaygp.vscode-css-peek.svg)](https://marketplace.visualstudio.com/items?itemName=pranaygp.vscode-css-peek)
 [![Version](https://vsmarketplacebadge.apphb.com/version/pranaygp.vscode-css-peek.svg)](https://marketplace.visualstudio.com/items?itemName=pranaygp.vscode-css-peek)
+[![Open VSX](https://img.shields.io/badge/Open%20VSX-vscode--css--peek-purple)](https://open-vsx.org/extension/pranaygp/vscode-css-peek)
 [![codecov](https://codecov.io/gh/pranaygp/vscode-css-peek/branch/master/graph/badge.svg)](https://codecov.io/gh/pranaygp/vscode-css-peek)
 
 # Functionality

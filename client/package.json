@@ -1,109 +1,107 @@
 {
-    "name": "vscode-css-peek",
-    "displayName": "CSS Peek",
-    "description": "Allow peeking to css ID and class strings as definitions from html files to respective CSS. Allows peek and goto definition.",
-    "icon": "css_peek_icon.png",
-    "license": "MIT",
-    "keywords": [
-        "peek",
-        "definition",
-        "css"
-    ],
-    "version": "3.0.2",
-    "publisher": "pranaygp",
-    "engines": {
-        "vscode": "^1.15.0"
-    },
-    "bugs": {
-        "url": "https://github.com/pranaygp/vscode-css-peek/issues"
-    },
-    "homepage": "https://github.com/pranaygp/vscode-css-peek/blob/master/README.md",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/pranaygp/vscode-css-peek.git"
-    },
-    "activationEvents": [
-        "*"
-    ],
-    "main": "./out/client/src/extension",
-    "contributes": {
-        "configuration": {
-            "type": "object",
-            "title": "CSS Peek extension configuration",
-            "properties": {
-                "css_peek.enable": {
-                    "scope": "resource",
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Controls the enablement."
-                },
-                "css_peek.peekFromLanguages": {
-                    "type": "array",
-                    "default": [
-                        "html",
-                        "ejs",
-                        "erb",
-                        "php",
-                        "javascriptreact",
-                        "typescriptreact",
-                        "typescript",
-                        "javascript"
-                    ],
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "A list of vscode language names where the extension should be used."
-                },
-                "css_peek.peekToExclude": {
-                    "type": "array",
-                    "default": [
-                        "**/node_modules",
-                        "**/bower_components"
-                    ],
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "A list of file globs that filters out peekable files"
-                },
-                "css_peek.trace.server": {
-                    "scope": "window",
-                    "type": "string",
-                    "enum": [
-                        "off",
-                        "messages",
-                        "verbose"
-                    ],
-                    "default": "off",
-                    "description": "Traces the communication between VSCode and the language server."
-                }
-            }
+  "name": "vscode-css-peek",
+  "displayName": "CSS Peek",
+  "description": "Allow peeking to css ID and class strings as definitions from html files to respective CSS. Allows peek and goto definition.",
+  "icon": "css_peek_icon.png",
+  "license": "MIT",
+  "keywords": [
+    "peek",
+    "definition",
+    "css"
+  ],
+  "version": "3.0.2",
+  "publisher": "pranaygp",
+  "engines": {
+    "vscode": "^1.15.0"
+  },
+  "bugs": {
+    "url": "https://github.com/pranaygp/vscode-css-peek/issues"
+  },
+  "homepage": "https://github.com/pranaygp/vscode-css-peek/blob/master/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pranaygp/vscode-css-peek.git"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/client/src/extension",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "CSS Peek extension configuration",
+      "properties": {
+        "css_peek.enable": {
+          "scope": "resource",
+          "type": "boolean",
+          "default": true,
+          "description": "Controls the enablement."
+        },
+        "css_peek.peekFromLanguages": {
+          "type": "array",
+          "default": [
+            "html",
+            "ejs",
+            "erb",
+            "php",
+            "javascriptreact",
+            "typescriptreact",
+            "typescript",
+            "javascript"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of vscode language names where the extension should be used."
+        },
+        "css_peek.peekToExclude": {
+          "type": "array",
+          "default": [
+            "**/node_modules",
+            "**/bower_components"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of file globs that filters out peekable files"
+        },
+        "css_peek.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VSCode and the language server."
         }
-    },
-    "scripts": {
-        "vscode:prepublish": "cp ../README.md . && tsc -p ./",
-        "compile": "tsc -p ./",
-        "watch": "tsc -w -p ./",
-        "update-vscode": "node ./node_modules/vscode/bin/install",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "lint": "eslint src/ --ext .ts",
-        "lint:fix": "npm run lint -- --fix",
-        "test": "env CODE_TESTS_PATH=\"$(pwd)/out/client/test\" CODE_TESTS_WORKSPACE=\"$(pwd)/test/test_files\" nyc node ./node_modules/vscode/bin/test",
-        "posttest": "nyc report --reporter=json && codecov -f coverage/*.json"
-    },
-    "dependencies": {
-        "vscode": "^1.1.5",
-        "vscode-languageclient": "^3.4.2"
-    },
-    "devDependencies": {
-        "codecov": "^3.0.0",
-        "eslint": "^4.12.1",
-        "eslint-plugin-import": "^2.8.0",
-        "mocha": "^4.0.1",
-        "nyc": "^11.3.0",
-        "typescript": "^2.6.2",
-        "typescript-eslint-parser": "^9.0.1",
-        "vscode-css-languageservice": "^3.0.1",
-        "vscode-html-languageservice": "^2.0.12",
-        "vscode-languageserver": "^3.5.0"
+      }
     }
+  },
+  "scripts": {
+    "vscode:prepublish": "cp ../README.md . && tsc -p ./",
+    "compile": "tsc -p ./",
+    "watch": "tsc -w -p ./",
+    "update-vscode": "node ./node_modules/vscode/bin/install",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "lint": "eslint src/ --ext .ts",
+    "lint:fix": "npm run lint -- --fix",
+    "test": "env CODE_TESTS_PATH=\"$(pwd)/out/client/test\" CODE_TESTS_WORKSPACE=\"$(pwd)/test/test_files\" nyc node ./node_modules/vscode/bin/test",
+    "posttest": "nyc report --reporter=json && codecov -f coverage/*.json"
+  },
+  "devDependencies": {
+    "vscode-languageclient": "^3.4.2",
+    "vscode": "^1.1.5",
+    "codecov": "^3.0.0",
+    "eslint": "^4.12.1",
+    "eslint-plugin-import": "^2.8.0",
+    "mocha": "^4.0.1",
+    "nyc": "^11.3.0",
+    "typescript": "^2.6.2",
+    "typescript-eslint-parser": "^9.0.1",
+    "vscode-css-languageservice": "^3.0.1",
+    "vscode-html-languageservice": "^2.0.12",
+    "vscode-languageserver": "^3.5.0"
+  }
 }
