@@ -19,14 +19,13 @@
       "name": "Launch Tests",
       "runtimeExecutable": "${execPath}",
       "args": [
-        "${workspaceRoot}/tests/test_files/",
         "--extensionDevelopmentPath=${workspaceRoot}",
-        "--extensionTestsPath=${workspaceRoot}/tests"
+        "--extensionTestsPath=${workspaceRoot}/tests",
+        "${workspaceRoot}/tests/fixture/"
       ],
       "stopOnEntry": false,
       "sourceMaps": true,
-      "outFiles": ["${workspaceRoot}/client/out/client/test/**/*.js"],
-      "preLaunchTask": "compile"
+      "outFiles": ["${workspaceRoot}/client/out/client/test/**/*.js"]
     },
     {
       "type": "node",
