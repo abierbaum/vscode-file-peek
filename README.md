@@ -10,7 +10,7 @@ This extension extends HTML and ejs code editing with `Go To Definition` and `Go
 
 This was heavily inspired by a similar feature in [Brackets](http://brackets.io/) called CSS Inline Editors.
 
-![working](working.gif)
+![working](readme/working.gif)
 
 The extension supports all the normal capabilities of symbol definition tracking, but does it for css selectors (classes, IDs and HTML tags). This includes:
 
@@ -20,7 +20,7 @@ The extension supports all the normal capabilities of symbol definition tracking
 
 In addition, it supports the Symbol Provider so you can quickly jump to the right CSS/SCSS/LESS code if you already know the class or ID name
 
-![Symbol Provider](symbolProvider.gif)
+![Symbol Provider](readme/symbolProvider.gif)
 
 See editor docs for more details
  * [Visual Studio Code: Goto Definition](https://code.visualstudio.com/docs/editor/editingevolved#_go-to-definition)
@@ -48,7 +48,7 @@ Contributions are greatly appreciated.  Please fork the repository and submit a 
 ## 2.1.0
 
   * Add support for Symbol Provider [#18](https://github.com/pranaygp/vscode-css-peek/issues/18)
-  > ![Symbol Provider](symbolProvider.gif)
+  > ![Symbol Provider](readme/symbolProvider.gif)
 
 ## 2.0.3
 

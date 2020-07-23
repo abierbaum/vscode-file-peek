@@ -2,9 +2,9 @@ import { Location, TextDocument, SymbolInformation } from "vscode-languageserver
 import { getCSSLanguageService, getSCSSLanguageService, getLESSLanguageService, LanguageService } from 'vscode-css-languageservice';
 
 import { Selector, StylesheetMap } from "../types";
-import { console } from './../logger'
+import { console } from './../logger';
 
-let languageServices: { [id: string]: LanguageService } = {
+const languageServices: { [id: string]: LanguageService } = {
 	css: getCSSLanguageService(),
 	scss: getSCSSLanguageService(),
 	less: getLESSLanguageService()
@@ -35,7 +35,7 @@ function getSelection(selector: Selector): string {
 }
 
 export function findSymbols(selector: Selector, stylesheetMap: StylesheetMap): SymbolInformation[] {
-  console.log('Searching for symbol')
+  console.log('Searching for symbol');
   const foundSymbols: SymbolInformation[] = [];
   
   let selection = getSelection(selector);
@@ -65,18 +65,18 @@ export function findSymbols(selector: Selector, stylesheetMap: StylesheetMap): S
           }
 
           if(symbol.name.search(re) !== -1) {
-            foundSymbols.push(symbol)
+            foundSymbols.push(symbol);
           } else if (!classOrIdSelector) {
             // Special case for tag selectors - match "*" as the rightmost character
             if (/\*\s*$/.test(symbol.name)) {
               foundSymbols.push(symbol);
             }
           }
-        })
+        });
       } catch (e) {
-        console.log(e.stack)
+        console.log(e.stack);
       }
-    })
+    });
 
   return foundSymbols;
 }

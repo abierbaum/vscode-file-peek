@@ -23,10 +23,10 @@ export default function findSelector(document: TextDocument, position: Position)
   let end = offset;
 
   while (start > 0 && text.charAt(start - 1) !== ' ' && text.charAt(start - 1) !== '\'' && text.charAt(start - 1) !== '"' && text.charAt(start - 1) !== '\n' && text.charAt(start - 1) !== '<')
-    start -= 1
+    start -= 1;
 
   while (end < text.length && text.charAt(end) !== ' ' && text.charAt(end) !== '\'' && text.charAt(end) !== '"' && text.charAt(end) !== '\n' && text.charAt(end) !== '>')
-    end += 1
+    end += 1;
 
   const selectorWord = text.slice(start, end);
 
@@ -54,7 +54,7 @@ export default function findSelector(document: TextDocument, position: Position)
       case TokenType.AttributeValue:
         if (attribute === 'class' || attribute === 'id') {
           if (htmlScanner.getTokenText().slice(1, -1).split(' ').indexOf(selectorWord) > -1){
-            selector = { attribute, value: selectorWord}
+            selector = { attribute, value: selectorWord};
           }
         }
         break;

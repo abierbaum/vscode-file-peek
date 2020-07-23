@@ -4,8 +4,8 @@ import {
   TextDocument as ServerTextDocument
 } from 'vscode-languageserver';
 
-import findSelector from './../../server/src/core/findSelector';
-import { create } from './../../server/src/logger';
+import findSelector from '../server/core/findSelector';
+import { create } from "../server/logger";
 
 describe("Extension Tests", () => {
 
@@ -13,8 +13,8 @@ describe("Extension Tests", () => {
 	let document2: ServerTextDocument;
 
 	before(done => {
-		console.log('before')
-		create(console as any);
+		console.log('before');
+		create(console);
 		vscode.workspace.openTextDocument(`${vscode.workspace.rootPath}/example.html`)
 			.then(doc => {
 				document = doc;
@@ -22,8 +22,8 @@ describe("Extension Tests", () => {
 				done();
 			}, error => {
 				done(error);
-			})
-	})
+			});
+	});
 
 	// Defines a Mocha unit test
 	describe("findSelector", () => {
@@ -38,35 +38,35 @@ describe("Extension Tests", () => {
 
 		it("can find the right id selector in a simple 'testID' case", () => {
 			assert.ok(document);
-			const selector: { attribute: String; value: String; } = findSelector(document2, idTestIDPos);
+			const selector: { attribute: string; value: string; } = findSelector(document2, idTestIDPos);
 			assert.equal(selector.attribute, "id");
 			assert.equal(selector.value, "testID");
-		})
+		});
 
 		it("can find the right class selector in a simple 'test' case", () => {
 			assert.ok(document);
-			const selector: { attribute: String; value: String; } = findSelector(document2, classTestPos);
+			const selector: { attribute: string; value: string; } = findSelector(document2, classTestPos);
 			assert.equal(selector.attribute, "class");
 			assert.equal(selector.value, "test");
-		})
+		});
 
 		it("can find the right class selector after an HTML comment", () => {
 			assert.ok(document);
-			const selector: { attribute: String; value: String; } = findSelector(document2, classTest2Pos);
+			const selector: { attribute: string; value: string; } = findSelector(document2, classTest2Pos);
 			assert.equal(selector.attribute, "id");
 			assert.equal(selector.value, "test-2");
-		})
+		});
 
 
 		//TODO: Add test case for HTML tags
 
 		it("throws an error for an invalid position", () => {
 			assert.ok(document);			
-			let selector: { attribute: String; value: String; } = findSelector(document2, notAnAttributePos);
+			let selector: { attribute: string; value: string; } = findSelector(document2, notAnAttributePos);
 			assert.equal(selector, null);
 			selector = findSelector(document2, notAnAttributePos2);
 			assert.equal(selector, null);
-		})
+		});
 	});
 
 	//TODO: Add tests to actually query the definition from the document and ensure definitions are found

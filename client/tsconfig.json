@@ -1,23 +1,12 @@
 {
 	"compilerOptions": {
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"noImplicitAny": true,
-		"noImplicitReturns": true,		
 		"module": "commonjs",
-		"target": "es6",
+		"target": "es2019",
+		"lib": ["ES2019"],
 		"outDir": "out",
-		"lib": [ "es6"],
+		"rootDir": "src",
 		"sourceMap": true
 	},
-	"exclude": [
-		"node_modules",
-		"server"
-	],
-	"include": [
-		"./**/*",
-		"./../server/src/core/findSelector.ts",
-		"./../server/src/logger/index.ts",
-		"./../server/src/types.d.ts"
-	]
+	"include": ["src"],
+	"exclude": ["node_modules", ".vscode-test"]
 }

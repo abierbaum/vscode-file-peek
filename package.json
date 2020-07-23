@@ -1,27 +1,111 @@
 {
-	"name": "vscode-css-peek",
-	"description": "Allow peeking to css ID and class strings as definitions from html files to respective CSS. Allows peek and goto definition.",
-	"author": "Pranay Prakash <pranay.gp@gmail.com>",
-	"license": "MIT",
-	"version": "0.0.1",
-	"publisher": "vscode",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Microsoft/vscode-extension-samples"
-	},
-	"scripts": {
-		"postinstall": "cd server && npm install && cd ../client && npm install && cd ..",
-		"compile": "tsc -p client/tsconfig.json && cd server && npm run installServer && cd .. && tsc -p server/tsconfig.json",
-		"compile:client": "tsc -p client/tsconfig.json",
-		"watch:client": "tsc -w -p client/tsconfig.json",
-		"compile:server": "cd server && npm run installServer && cd .. && tsc -p server/tsconfig.json",
-		"watch:server": "cd server && npm run installServer && cd .. && tsc -w -p server/tsconfig.json",
-		"test": "cd client && npm run test",
-		"lint": "cd client && npm run lint"
-	},
-	"devDependencies": {
-		"@types/mocha": "^2.2.42",
-		"@types/node": "^6.0.88",
-		"typescript": "^2.5.2"
-	}
+  "name": "vscode-css-peek",
+  "displayName": "CSS Peek",
+  "description": "Allow peeking to css ID and class strings as definitions from html files to respective CSS. Allows peek and goto definition.",
+  "author": "Pranay Prakash <pranay.gp@gmail.com>",
+  "icon": "css_peek_icon.png",
+  "license": "MIT",
+  "version": "3.0.2",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pranaygp/vscode-css-peek"
+  },
+  "categories": [],
+  "keywords": [
+    "definition",
+    "css",
+    "scss",
+    "sass",
+    "less",
+    "peek",
+    "style",
+    "stylesheet",
+    "jump to stylesheet",
+    "multi-root ready"
+  ],
+  "engines": {
+    "vscode": "^1.33.0"
+  },
+  "main": "./client/out/extension",
+  "publisher": "pranaygp",
+  "bugs": {
+    "url": "https://github.com/pranaygp/vscode-css-peek/issues"
+  },
+  "homepage": "https://github.com/pranaygp/vscode-css-peek/blob/master/README.md",
+  "activationEvents": [
+    "*"
+  ],
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "CSS Peek extension configuration",
+      "properties": {
+        "css_peek.enable": {
+          "scope": "resource",
+          "type": "boolean",
+          "default": true,
+          "description": "Controls the enablement."
+        },
+        "css_peek.peekFromLanguages": {
+          "type": "array",
+          "default": [
+            "html",
+            "ejs",
+            "erb",
+            "php",
+            "javascriptreact",
+            "typescriptreact",
+            "typescript",
+            "javascript"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of vscode language names where the extension should be used."
+        },
+        "css_peek.peekToExclude": {
+          "type": "array",
+          "default": [
+            "**/node_modules",
+            "**/bower_components"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of file globs that filters out peekable files"
+        },
+        "css_peek.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VSCode and the language server."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn run compile",
+    "compile": "tsc -b",
+    "lint": "yarn run eslint . --ext ts",
+    "watch": "tsc -b -w",
+    "test": "env CODE_TESTS_PATH=\"$(pwd)/tests\" CODE_TESTS_WORKSPACE=\"$(pwd)/tests/test_files\" nyc node ./node_modules/vscode/bin/test",
+    "posttest": "nyc report --reporter=json && codecov -f coverage/*.json",
+    "postinstall": "cd client && yarn && cd ../server && yarn && cd .."
+  },
+  "devDependencies": {
+    "@types/mocha": "^8.0.0",
+    "@types/node": "^14.0.24",
+    "@typescript-eslint/eslint-plugin": "^3.7.0",
+    "@typescript-eslint/parser": "^3.7.0",
+    "codecov": "^3.7.2",
+    "eslint": "^7.5.0",
+    "mocha": "^8.0.1",
+    "nyc": "^15.1.0",
+    "typescript": "^3.9.7"
+  }
 }
