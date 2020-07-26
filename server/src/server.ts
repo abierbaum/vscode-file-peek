@@ -32,7 +32,7 @@ const documents = new TextDocuments();
 const styleSheets: StylesheetMap = {};
 
 // The workspace folder this server is operating on
-let workspaceFolder: string;
+let workspaceFolder: string | null;
 
 // A list of languages that suport the lookup definition (by default, only html)
 let peekFromLanguages: string[];
@@ -42,14 +42,10 @@ documents.onDidOpen((event) => {
     `[Server(${process.pid}) ${workspaceFolder}] Document opened: ${event.document.uri}`
   );
   if (isLanguageServiceSupported(event.document.languageId)) {
-    const uri = event.document.uri;
-    const languageId = event.document.languageId;
-    const text = event.document.getText();
-    const document = TextDocument.create(uri, languageId, 1, text);
-    const languageService = getLanguageService(document);
-    const stylesheet = languageService.parseStylesheet(document);
+    const languageService = getLanguageService(event.document);
+    const stylesheet = languageService.parseStylesheet(event.document);
     styleSheets[event.document.uri] = {
-      document,
+      document: event.document,
       stylesheet,
     };
   }
@@ -61,14 +57,10 @@ documents.onDidChangeContent((event) => {
     `[Server(${process.pid}) ${workspaceFolder}] Document changed: ${event.document.uri}`
   );
   if (isLanguageServiceSupported(event.document.languageId)) {
-    const uri = event.document.uri;
-    const languageId = event.document.languageId;
-    const text = event.document.getText();
-    const document = TextDocument.create(uri, languageId, 1, text);
-    const languageService = getLanguageService(document);
-    const stylesheet = languageService.parseStylesheet(document);
+    const languageService = getLanguageService(event.document);
+    const stylesheet = languageService.parseStylesheet(event.document);
     styleSheets[event.document.uri] = {
-      document,
+      document: event.document,
       stylesheet,
     };
   }
@@ -81,9 +73,9 @@ connection.onInitialize((params) => {
   connection.console.log(
     `[Server(${process.pid}) ${workspaceFolder}] Started and initialize received`
   );
-  setupStyleMap(params);
+  setupInitialStyleMap(params);
   connection.console.log(
-    `[Server(${process.pid}) ${workspaceFolder}] Setup a stylesheet lookup map`
+    `[Server(${process.pid}) ${workspaceFolder}] Setup the stylesheet lookup map`
   );
 
   return {
@@ -98,7 +90,7 @@ connection.onInitialize((params) => {
   };
 });
 
-function setupStyleMap(params: InitializeParams) {
+function setupInitialStyleMap(params: InitializeParams) {
   const styleFiles = params.initializationOptions.stylesheets;
 
   styleFiles.forEach((fileUri: Uri) => {

@@ -1,16 +1,19 @@
 {
   "name": "vscode-css-peek",
-  "description": "Tests",
+  "description": "CSS Peek Language Server",
   "version": "0.0.1",
   "license": "MIT",
+  "engines": {
+    "node": "*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/pranaygp/vscode-css-peek"
   },
   "dependencies": {
-    "vscode-css-languageservice": "^4.3.0",
-    "vscode-html-languageservice": "^3.1.0",
-    "vscode-languageserver": "^5.2.1"
+    "@types/vscode": "^1.33.0",
+    "vscode-languageserver": "^5.2.1",
+    "vscode-test": "^1.4.0"
   },
   "scripts": {}
 }

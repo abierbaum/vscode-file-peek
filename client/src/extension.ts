@@ -16,25 +16,28 @@ import {
   TransportKind,
 } from "vscode-languageclient";
 
-const supportedStyleLanguages = ["css", "scss", "less"];
+const SUPPORTED_EXTENSIONS = ["css", "scss", "less"];
+const SUPPORTED_EXTENSION_REGEX = /\.(css|scss|less)$/;
 
 let defaultClient: LanguageClient;
 const clients: Map<string, LanguageClient> = new Map();
 
-let _sortedWorkspaceFolders: string[];
+let _sortedWorkspaceFolders: string[] | undefined;
 function sortedWorkspaceFolders(): string[] {
   if (_sortedWorkspaceFolders === void 0) {
     _sortedWorkspaceFolders = Workspace.workspaceFolders
-      .map((folder) => {
-        let result = folder.uri.toString();
-        if (result.charAt(result.length - 1) !== "/") {
-          result = result + "/";
-        }
-        return result;
-      })
-      .sort((a, b) => {
-        return a.length - b.length;
-      });
+      ? Workspace.workspaceFolders
+          .map((folder) => {
+            let result = folder.uri.toString();
+            if (result.charAt(result.length - 1) !== "/") {
+              result = result + "/";
+            }
+            return result;
+          })
+          .sort((a, b) => {
+            return a.length - b.length;
+          })
+      : [];
   }
   return _sortedWorkspaceFolders;
 }
@@ -50,30 +53,36 @@ function getOuterMostWorkspaceFolder(folder: WorkspaceFolder): WorkspaceFolder {
       uri = uri + "/";
     }
     if (uri.startsWith(element)) {
-      return Workspace.getWorkspaceFolder(Uri.parse(element));
+      return Workspace.getWorkspaceFolder(Uri.parse(element))!;
     }
   }
   return folder;
 }
 
 export function activate(context: ExtensionContext): void {
-  const config: WorkspaceConfiguration = Workspace.getConfiguration("css_peek");
+  const module = context.asAbsolutePath(
+    path.join("server", "out", "server.js")
+  );
+  const outputChannel: OutputChannel = Window.createOutputChannel("css-peek");
 
+  const config: WorkspaceConfiguration = Workspace.getConfiguration("css_peek");
   const peekFromLanguages: Array<string> = config.get(
     "peekFromLanguages"
   ) as Array<string>;
-
-  const peekToInclude = supportedStyleLanguages.map((l) => `**/*.${l}`);
-
+  const peekToInclude = SUPPORTED_EXTENSIONS.map((l) => `**/*.${l}`);
   const peekToExclude: Array<string> = config.get("peekToExclude") as Array<
     string
   >;
 
-  const module = context.asAbsolutePath(path.join("server", "server.js"));
-  const outputChannel: OutputChannel = Window.createOutputChannel("css-peek");
-
   function didOpenTextDocument(document: TextDocument): void {
-    if (document.uri.scheme !== "file" && document.uri.scheme !== "untitled") {
+    // TODO: Return if unsupported document.languageId
+    if (
+      !["file", "untitled"].includes(document.uri.scheme) ||
+      !(
+        peekFromLanguages.includes(document.languageId) ||
+        SUPPORTED_EXTENSION_REGEX.test(document.fileName)
+      )
+    ) {
       return;
     }
 
@@ -95,7 +104,7 @@ export function activate(context: ExtensionContext): void {
         },
         initializationOptions: {
           stylesheets: [],
-          peekFromLanguages: peekFromLanguages,
+          peekFromLanguages,
         },
         diagnosticCollectionName: "css-peek",
         outputChannel,
@@ -142,7 +151,7 @@ export function activate(context: ExtensionContext): void {
         const clientOptions: LanguageClientOptions = {
           documentSelector: peekFromLanguages.map((language) => ({
             scheme: "file",
-            language: language,
+            language,
             pattern: `${folder.uri.fsPath}/**/*`,
           })),
           diagnosticCollectionName: "css-peek",
@@ -154,7 +163,7 @@ export function activate(context: ExtensionContext): void {
               uri: u.toString(),
               fsPath: u.fsPath,
             })),
-            peekFromLanguages: peekFromLanguages,
+            peekFromLanguages,
           },
           workspaceFolder: folder,
           outputChannel,

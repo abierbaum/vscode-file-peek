@@ -66,8 +66,8 @@
         "css_peek.peekToExclude": {
           "type": "array",
           "default": [
-            "**/node_modules",
-            "**/bower_components"
+            "**/node_modules/**",
+            "**/bower_components/**"
           ],
           "items": {
             "type": "string"
@@ -93,9 +93,9 @@
     "compile": "tsc -b",
     "lint": "yarn run eslint . --ext ts",
     "watch": "tsc -b -w",
-    "test": "env CODE_TESTS_PATH=\"$(pwd)/tests\" CODE_TESTS_WORKSPACE=\"$(pwd)/tests/test_files\" nyc node ./node_modules/vscode/bin/test",
+    "test": "nyc node tests/out/runTest.js",
     "posttest": "nyc report --reporter=json && codecov -f coverage/*.json",
-    "postinstall": "cd client && yarn && cd ../server && yarn && cd .."
+    "postinstall": "cd client && yarn && cd ../server && yarn && cd ../tests && yarn && cd .."
   },
   "devDependencies": {
     "@types/mocha": "^8.0.0",

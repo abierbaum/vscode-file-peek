@@ -14,18 +14,19 @@
       "preLaunchTask": "npm: watch"
     },
     {
+      "name": "Launch Tests",
       "type": "extensionHost",
       "request": "launch",
-      "name": "Launch Tests",
       "runtimeExecutable": "${execPath}",
       "args": [
         "--extensionDevelopmentPath=${workspaceRoot}",
-        "--extensionTestsPath=${workspaceRoot}/tests",
+        "--extensionTestsPath=${workspaceRoot}/tests/out/suite/index",
         "${workspaceRoot}/tests/fixture/"
       ],
       "stopOnEntry": false,
       "sourceMaps": true,
-      "outFiles": ["${workspaceRoot}/client/out/client/test/**/*.js"]
+      "outFiles": ["${workspaceRoot}/test/out/**/*.js"],
+      "preLaunchTask": "npm: compile"
     },
     {
       "type": "node",
